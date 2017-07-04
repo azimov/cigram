@@ -5,7 +5,7 @@ import multiprocessing
 import time
 
 
-def sampler_function(M, m_args, measure_funcs, samples, results_dict, lock, seed):
+def sampler_function(m, m_args, measure_funcs, samples, results_dict, lock, seed):
     """
     Repeatedly run a model with a set of parameters and measure functions
 
@@ -13,7 +13,7 @@ def sampler_function(M, m_args, measure_funcs, samples, results_dict, lock, seed
     for i in range(samples):
         t_start = time.time()
         m_args["seed"] = seed
-        model_graph = M(**m_args)
+        model_graph = m(**m_args)
         t_end = time.time()
 
         results = {}
@@ -25,7 +25,7 @@ def sampler_function(M, m_args, measure_funcs, samples, results_dict, lock, seed
 
         if seed is not None:
             results["seed"] = seed
-            seed +=1
+            seed += 1
 
         # store all the results at the same time point to keep list in the correct order
         lock.acquire()
@@ -33,16 +33,16 @@ def sampler_function(M, m_args, measure_funcs, samples, results_dict, lock, seed
             # multiprocess race condition needs lock
             # The following code looks odd but it breaks if you just do "results_dict[measure].append"
             # this is because of a weird bug in the multiprocessing manager shared dict class.
-            # ommiting this will mean results_dict elements are lists of length 1.
+            # omitting this will mean results_dict elements are lists of length 1.
             shared = results_dict[measure]
             shared.append(result)
-            results_dict[measure]= shared
+            results_dict[measure] = shared
         lock.release()
 
         del model_graph
 
 
-def multiprocess_samples(M, m_args, measure_funcs, samples=100, num_procs=multiprocessing.cpu_count(), seed=None):
+def multiprocess_samples(m, m_args, measure_funcs, samples=100, num_procs=multiprocessing.cpu_count(), seed=None):
     """
     run num_procs worth of samples
     M is the model function, m_args is the set of arugments to the model
@@ -58,7 +58,7 @@ def multiprocess_samples(M, m_args, measure_funcs, samples=100, num_procs=multip
     this function would then return {"graphs":[<number of samples Graph objects>]}
     """
     if seed is None:
-        seed = int(time())
+        seed = int(time.time())
 
     proc_sample_size = int(samples/num_procs)
 
@@ -90,10 +90,10 @@ def multiprocess_samples(M, m_args, measure_funcs, samples=100, num_procs=multip
         if i + 1 == num_procs:
             n_samples += samples - total_samples
 
-        p = multiprocessing.Process(target=sampler_function, args=(M, m_args, measure_funcs, n_samples, results_dict, lock, proc_seed))
+        p = multiprocessing.Process(target=sampler_function, args=(m, m_args, measure_funcs, n_samples, results_dict,
+                                                                   lock, proc_seed))
         procs.append(p)
         p.start()
-
 
     for p in procs:
         p.join()

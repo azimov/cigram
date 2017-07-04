@@ -71,7 +71,6 @@ def single_process_graph(n, density, a=0, sigma_nodes=1, sigma_edges=1, connecte
     """
     This is the simplest graph model, it generates no communities.
     Generates graphs with a tunable level of assortativity by modfiying parameter a.
-
     """
     if seed is None:
         seed = int(time.time())

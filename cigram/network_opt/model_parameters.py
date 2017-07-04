@@ -1,4 +1,4 @@
-'''
+"""
 CiGRAM - Gaussian Random grAph Model
 
 Copyright (C) 2014  James Gilbert
@@ -12,38 +12,31 @@ This program is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 more details: http://www.gnu.org/licenses/gpl.html
-'''
+"""
 from __future__ import division
-import networkx as nx
 import json
 import multiprocessing
 import numpy as np
 import random
 import os
-from cigram.network_opt.fitness_measures import summary_stat_fitness
 import time
 import logging
+import cma
+import multiprocessing as mp
+import inspyred
+
 logger = logging.getLogger('inspyred.ec')
-
-try:
-        import inspyred
-except AttributeError:
-        # Python 2.6 backwards compaitability
-        from ordereddict import OrderedDict
-        import collections
-        collections.OrderedDict = OrderedDict
-        import inspyred
-
 
 
 def pso(topology=inspyred.swarm.topologies.star_topology):
-    '''
+    """
     create PSO optimiser instance
-    '''
+    """
     ea = inspyred.swarm.PSO(random) 
     ea.terminator = inspyred.ec.terminators.evaluation_termination
     ea.topology = topology
     return ea
+
 
 def dea():
     ea = inspyred.ec.DEA(random)
@@ -57,6 +50,7 @@ def sim_anneal():
     return ea
 
 model_store = {}
+
 
 def graph_fit_evaluator(candidates, args):
     """
@@ -73,6 +67,7 @@ def graph_fit_evaluator(candidates, args):
             fit.append(np.mean(dist))
 
     return fit
+
 
 def graph_fit_evaluator_avg(candidates, args):
     """
@@ -111,19 +106,20 @@ def time_logger_observer(population, num_generations, num_evaluations, args):
     args["best_fit_history"].append(best[1])
     args["observer_times"].append(e_time)
     observer_results = {
-        "stats":{
+        "stats": {
             "num_generations": num_generations,
             "num_evaluations": num_evaluations,
             "observer_times": args["observer_times"],
             "best_fit": best[1],
             "best_fit_history": args["best_fit_history"],
-            "eval_counts":args["eval_counts"]
+            "eval_counts": args["eval_counts"]
         },
-        "population":results
+        "population": results
     }
     
     with open(save_path, "w+") as obs_file:
         json.dump(observer_results, obs_file, indent=4)
+
 
 def default_observer(population, num_generations, num_evaluations, args):
     """
@@ -139,22 +135,32 @@ def default_observer(population, num_generations, num_evaluations, args):
     model.set_gbest(pbest)
 
     observer_results = {
-        "stats":{
+        "stats": {
             "num_generations": num_generations,
             "num_evaluations": num_evaluations,
             "best_fit": model.gbest[1],
-            "best":model.gbest[0],
+            "best": model.gbest[0],
             
             "current_best_fit": pbest[1],
-            "current_best":pbest[0],
+            "current_best": pbest[0],
         }
     }
 
     with open(save_path, "w+") as obs_file:
             json.dump(observer_results, obs_file, indent=4)
 
-def optimise_model(model, num_cpus=multiprocessing.cpu_count(), pop_size=50, max_evals=10000, num_replicates=5, observer=default_observer, ea=pso(), seed=None, start_time=time.time(), evaluator=graph_fit_evaluator):
-    '''
+
+def optimise_model(model,
+                   num_cpus=multiprocessing.cpu_count(),
+                   pop_size=50,
+                   max_evals=10000,
+                   num_replicates=5,
+                   observer=default_observer,
+                   ea=pso(),
+                   seed=None,
+                   start_time=time.time(),
+                   evaluator=graph_fit_evaluator):
+    """
     Generic function to optimise a model to fit a target graph
     
     The objective is to minimise the distance between the target graph and some 
@@ -163,17 +169,18 @@ def optimise_model(model, num_cpus=multiprocessing.cpu_count(), pop_size=50, max
     Returns sorted list of model parameters with observed fitness. 
     
     Parameters:
-            model gram_optimiser object that contains methods required for this process to work
+            model: CiGRAM optimiser object that contains methods required for this process to work
             num_cpus: number of processes to be spawned - defaults to number of cpus
-            
+            ea: evolutionary optimiser used
             pop_size: swarm size
             max_evals: number of max_evaluations
             num_replicates: number of candidate_replicates
             observer: optional bool to save results as the process is running
             seed: random seed
-    '''
+            start_time
+            evaluator
+    """
     np.random.seed(seed)
-    random = np.random
     ea.observer = observer
     
     try:
@@ -193,7 +200,7 @@ def optimise_model(model, num_cpus=multiprocessing.cpu_count(), pop_size=50, max
         generator=model.parameter_generator,
         name=model.name,
         observer_save_path=".cigram_cache/{0}.json".format(model.name),
-        start_time = start_time
+        start_time=start_time
     )
 
     # This step is largely because the single process code is far easier to debug
@@ -203,41 +210,41 @@ def optimise_model(model, num_cpus=multiprocessing.cpu_count(), pop_size=50, max
         optimisation_parameters["mp_evaluator"] = evaluator
     else:
         optimisation_parameters["evaluator"] = evaluator
-            
-    
+
     final_pop = ea.evolve(**optimisation_parameters)
     
-    results =  sorted([model.gbest] + [(model.get_params(c.candidate), c.fitness) for c in final_pop], key=lambda x: x[1])
+    results = sorted([model.gbest] +
+                     [(model.get_params(c.candidate), c.fitness) for c in final_pop], key=lambda x: x[1])
     
     return results
-
-
-import cma
-import multiprocessing as mp
         
 
-def cma_es_optimise_model(model, num_cpus=mp.cpu_count(), pop_size=50, cma_sigma=0.5, max_evals=10000, num_replicates=5, seed=None, start_time=time.time(), evaluator=graph_fit_evaluator):
+def cma_es_optimise_model(model,
+                          num_cpus=mp.cpu_count(),
+                          pop_size=50,
+                          cma_sigma=0.5,
+                          max_evals=10000,
+                          num_replicates=5,
+                          seed=None,
+                          start_time=time.time(),
+                          evaluator=graph_fit_evaluator):
     
-    '''
-    Best fit optimisation with CMA-ES
-    
-     * Figure out how to set number of max_evaluations/time
-     * Returning results of best fit networks
-    '''
+    """
+    Best fit optimisation with CMA-ES instead of inspyred package evolutionary optimisers
+    """
 
     # Start optimiser with random starting parameters
-    es = cma.CMAEvolutionStrategy(model.parameter_generator(np.random, {}), cma_sigma, { "verb_disp":0, "verbose":0})
+    es = cma.CMAEvolutionStrategy(model.parameter_generator(np.random, {}), cma_sigma,  dict(verb_disp=0, verbose=0))
     
-    def fitness_wrap(x, res, lock):
+    def fitness_wrap(x, res, tlock):
         fit = model.get_fitness(x)
-        # Weird copying of variables is a necissary work around
-        lock.acquire()
+        # Weird copying of variables is a necessary work around
+        tlock.acquire()
         result = res
         result.append((x, fit))
         res = result
-        lock.release()
+        tlock.release()
 
-    
     manager = mp.Manager()
     lock = manager.Lock()
     
@@ -245,13 +252,11 @@ def cma_es_optimise_model(model, num_cpus=mp.cpu_count(), pop_size=50, cma_sigma
         # First, get canidate solutions
         candidates = es.ask()
         # Multithreaded calulcation for each canidate solution
-        
         f_values = manager.list()
-        
         procs = []
-        for x in candidates:
+        for xo in candidates:
 
-            proc = mp.Process(target=fitness_wrap, args=(x,f_values,lock))
+            proc = mp.Process(target=fitness_wrap, args=(xo, f_values, lock))
             proc.start()
             procs.append(proc)
         

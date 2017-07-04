@@ -1,6 +1,6 @@
 /*
  * CiGRAM - Circular Gaussian Random grAph Model
- * Copyright (C) 2014  James Gilbert
+ * Copyright (C) 2017  James Gilbert
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
