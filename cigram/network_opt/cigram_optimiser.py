@@ -163,10 +163,10 @@ class CigramOptimiser(object):
         """
         
         if len(self.starting_population):
-                cand = self.starting_population.pop()
-                pset = [cand[p] for p in self.param_boundaries.keys()]
+            cand = self.starting_population.pop()
+            pset = [cand[p] for p in self.param_boundaries.keys()]
         else:
-                pset = [self.random_param_func[p](*bounds) for p, bounds in self.param_boundaries.items()]
+            pset = [self.random_param_func[p](*bounds) for p, bounds in self.param_boundaries.items()]
         return pset
 
 
