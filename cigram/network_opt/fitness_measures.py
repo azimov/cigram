@@ -4,10 +4,7 @@ import numpy as np
 from networkx.algorithms.approximation.clustering_coefficient import average_clustering
 from cigram.utils.analysis import ks_distance
 
-class summary_stat_fitness(object):
-    '''
-    Uses distance between different summary statistics to compute graph similiarity
-    '''
+class SummaryStatFitness(object):
     
     def __init__(self,
                 max_degree_fit_weight=0.5,
@@ -15,7 +12,14 @@ class summary_stat_fitness(object):
                 clustering_fit_weight=0.5,
                 assort_fit_weight=0.5,
                 **kwargs):
-        
+        """
+        Uses distance between different summary statistics to compute graph similiarity
+        :param max_degree_fit_weight:
+        :param degree_fit_weight:
+        :param clustering_fit_weight:
+        :param assort_fit_weight:
+        :param kwargs:
+        """
         self.mdfw = max_degree_fit_weight
         self.dfw = degree_fit_weight
         self.cfw = clustering_fit_weight
@@ -23,11 +27,11 @@ class summary_stat_fitness(object):
             
     
     def graph_properties(self, G):
-        '''
+        """
         compute the properties of the graph in question
         
         max degree, ks_dist, degree_assortativity, clustering coefficient
-        '''
+        """
         degree = G.degree().values()
         props =  dict(
                 max_degree=max(degree),
@@ -39,9 +43,9 @@ class summary_stat_fitness(object):
         return props
     
     def graph_fitness(self, prop_a, prop_b):
-        '''
+        """
         Summary statistics dissimmilarity
-        '''
+        """
         max_deg_dist = np.abs(np.log10(prop_a["max_degree"]) - np.log10(prop_b["max_degree"]))
         ks_dist = ks_distance(prop_a["degree"], prop_b["degree"], normed=False, d_min=10)
         assort_dist = np.abs(prop_a["assort"] - prop_b["assort"]) 
@@ -50,27 +54,27 @@ class summary_stat_fitness(object):
         return (ks_dist + 0.5 * (max_deg_dist + assort_dist + clust_dist))
 
 
-class no_clustering_summary(object):
-    '''
-    Graph summary stat similarity without measuring the expensive to compute clustering coefficient
-    '''
+class NoClusterSummaryFitness(object):
+
     def __init__(self,
                     max_degree_fit_weight=0.5,
                     degree_fit_weight=1.0,
                     assort_fit_weight=0.5,
                     **kwargs):
-            
+        """
+        Graph summary stat similarity without measuring the expensive to compute clustering coefficient
+        """
         self.mdfw = max_degree_fit_weight
         self.dfw = degree_fit_weight
         self.afw = assort_fit_weight
     
     
     def graph_properties(self, G):
-        '''
+        """
         compute the properties of the graph in question (nx graph object)
         
         max degree, ks_dist, degree_assortativity,
-        '''
+        """
         degree = G.degree().values()
         props =  dict(
                 degree=degree,
@@ -81,9 +85,9 @@ class no_clustering_summary(object):
         return props
     
     def graph_fitness(self, prop_a, prop_b):
-        '''
+        """
         Summary statistics dissimmilarity
-        '''
+        """
         max_deg_dist = np.abs(np.log10(prop_a["max_degree"]) - np.log10(prop_b["max_degree"]))
         ks_dist = ks_distance(prop_a["degree"], prop_b["degree"], normed=False, d_min=10)
         assort_dist = np.abs(prop_a["assort"] - prop_b["assort"]) 
@@ -98,8 +102,8 @@ class degree_cdf_l2_norm(object):
     
     
     def graph_properties(self, G):
-        '''
-        '''
+        """
+        """
         degree = G.degree()
         
     
@@ -109,9 +113,9 @@ class degree_cdf_l2_norm(object):
     
     
     def graph_fitness(self, degree_diff_a, degree_diff_b):
-        '''
+        """
         distance between cumulative degree difference distributions
-        '''
+        """
 
         if len(degree_diff_a) > len(degree_diff_b):
             degree_diff_b += [1.0] * (len(degree_diff_a) - len(degree_diff_b))
@@ -121,20 +125,20 @@ class degree_cdf_l2_norm(object):
         return np.mean(np.abs(np.array(degree_diff_a) - np.array(degree_diff_b))) 
 
 
-class Fit_degree_difference(object):
-    '''
+class DegreeDifference(object):
+    """
     Graph summary stat similarity without measuring the expensive to compute clustering coefficient
-    '''
+    """
     def __init__(self, **kwargs):
         pass
     
     
     def graph_properties(self, G):
-        '''
+        """
         compute the properties of the graph in question (nx graph object)
         
         max degree, ks_dist, degree_assortativity,
-        '''
+        """
         degree = G.degree()
         
         degree_diff = [np.abs(degree[i] - degree[j]) for i,j in  G.edges() ] 
@@ -144,14 +148,13 @@ class Fit_degree_difference(object):
     
     
     def graph_fitness(self, degree_diff_a, degree_diff_b):
-        '''
+        """
         distance between cumulative degree difference distributions
-        '''
+        """
 
         if len(degree_diff_a) > len(degree_diff_b):
             degree_diff_b += [1.0] * (len(degree_diff_a) - len(degree_diff_b))
         elif len(degree_diff_a) < len(degree_diff_b):
             degree_diff_a += [1.0] * (len(degree_diff_b) - len(degree_diff_a))
-        
-        
+
         return np.mean(np.abs(np.array(degree_diff_a) - np.array(degree_diff_b))) 

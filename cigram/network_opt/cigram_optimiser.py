@@ -5,8 +5,6 @@ from __future__ import division
 import networkx as nx
 from cigram import community_graph
 import numpy as np
-from fitness_measures import summary_stat_fitness
-
 
 import inspyred
 from collections import OrderedDict
@@ -14,14 +12,14 @@ from collections import OrderedDict
 import logging
 logger = logging.getLogger('inspyred.ec')
 
-class cigram_optimiser(object):
+class CigramOptimiser(object):
     """
     Optimisation class to fit a given type of graph model.
     This code could be generalised to another type of model to adapt the fitting procedure
     """
     model_params = []
     
-    def __init__(self, G, fit_evaluator, 
+    def __init__(self, g, fit_evaluator,
                     a_bounds=(-5.0, 5.0),
                     sf_bounds=(0.6, 2.0),
                     sr_bounds=(0.6, 2.0),
@@ -32,38 +30,56 @@ class cigram_optimiser(object):
                     max_n=None,
                     k_bounds=None,
                     random=np.random,
-                    minDegree=1,
+                    min_degree=1,
                     starting_population=[],
                     graph_props=None,
                     seed=None,
                     **kwargs):
         """
         Parameters that are used throughout the optimisation are set here.
-        
         fixed_model_params are the parameters that do no change throughout
         param boundaries are the limits of the parameters that can be used.
-        
         The weights apply as follows:
                 max_degree_fit_weight - the difference between the (log scaled) maximum degrees.
                 degree_fit_weight - the distance between observed degree distrubtions in the Kolmogorov Smirnov distance.
                 assort_fit_weight - the distance between observed levels of assortativity.
-                
+
+
+
+        :param g: networkx.Graph object to fit
+        :param fit_evaluator:
+        :param a_bounds:
+        :param sf_bounds:
+        :param sr_bounds:
+        :param csf_bounds:
+        :param csr_bounds:
+        :param ek_per_bounds:
+        :param po_bounds:
+        :param max_n:
+        :param k_bounds:
+        :param random:
+        :param min_degree:
+        :param starting_population:
+        :param graph_props:
+        :param seed:
+        :param kwargs:
         """
-        self.G = G
+
+        self.graph = g
         self.fixed_model_params = {
-                "N": G.number_of_nodes(),
-                "Density": nx.density(G),
+                "n": g.number_of_nodes(),
+                "density": nx.density(g),
                 "connected":False,
-                "minDegree":minDegree
+                "min_degree":min_degree
         }
         
         self.gbest = None
         self.starting_population =  starting_population
         
-        if max_n is not None and max_n < G.number_of_nodes():
-                scaling_factor = G.number_of_nodes()/max_n
-                self.fixed_model_params["N"] = max_n
-                self.fixed_model_params["Density"] *= scaling_factor 
+        if max_n is not None and max_n < g.number_of_nodes():
+                scaling_factor = g.number_of_nodes()/max_n
+                self.fixed_model_params["n"] = max_n
+                self.fixed_model_params["density"] *= scaling_factor
 
         if k_bounds is None:
                 k_bounds = (1, int(self.fixed_model_params["N"]/20))
@@ -80,14 +96,14 @@ class cigram_optimiser(object):
         self.param_boundaries["sigma_nodes"] = sf_bounds
         self.param_boundaries["sigma_edges"] = sr_bounds
         self.param_boundaries["a"] = a_bounds
-        self.param_boundaries["K"] =  k_bounds
-        self.param_boundaries["community_sigmaF"] = csf_bounds
-        self.param_boundaries["community_sigmaR"] = csr_bounds
+        self.param_boundaries["k"] =  k_bounds
+        self.param_boundaries["community_sigma_f"] = csf_bounds
+        self.param_boundaries["community_sigma_r"] = csr_bounds
         self.param_boundaries["ek_per"] = ek_per_bounds
         self.param_boundaries["p_o"] = po_bounds
         
         self.random_param_func = dict([(p, random.uniform) for p in self.param_boundaries.keys()])
-        self.random_param_func["K"] = random.randint
+        self.random_param_func["k"] = random.randint
         
         for p, bounds in self.param_boundaries.items():
                 if type(bounds) is not tuple:
@@ -100,7 +116,7 @@ class cigram_optimiser(object):
         if "name" in kwargs:
                 self.name = kwargs["name"]
         else:
-                self.name = "{0}".format(G.name)
+                self.name = "{0}".format(g.name)
         
         self.fit_evaluator = fit_evaluator
         # Store the target degree distribution/assortativity/clustering
@@ -135,9 +151,9 @@ class cigram_optimiser(object):
                 self.seed += 1
 
         logger.debug("Generating {0}".format(params))
-        G, _, _ = community_graph(**params)
+        g, _, _ = community_graph(**params)
         logger.debug("Generated {0}".format(params))
-        return G
+        return g
 
 
     def parameter_generator(self, random, args):
