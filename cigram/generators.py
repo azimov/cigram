@@ -13,13 +13,14 @@ WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
 more details: http://www.gnu.org/licenses/gpl.html
 """
+from __future__ import division
 import time
 import networkx
 
 from cigram.cmodel import generate_graph
 
 
-def community_graph(n, density, k, ek_per=0.01, p_o=0, a=0.0, sigma_nodes=1.0, sigma_edges=1.0, community_sigma_r=None,
+def community_graph(n, avg_deg, k, density=None, ek_per=0.01, p_o=0, a=0.0, sigma_nodes=1.0, sigma_edges=1.0, community_sigma_r=None,
                     community_sigma_f=None, connected=True, seed=None, ret_com_pos=False, min_degree=1,
                     min_community_size=0):
     """
@@ -47,6 +48,10 @@ def community_graph(n, density, k, ek_per=0.01, p_o=0, a=0.0, sigma_nodes=1.0, s
     if community_sigma_f is None:
         community_sigma_f = sigma_edges
 
+    # Density overrides avg_k - weird behaviour but designed for some legacy code
+    if density is None:
+        density = avg_k * 1/(n-1)
+
     edges, communities, node_positions, community_positions = generate_graph(int(n), int(k), float(density),
                                                                              float(sigma_nodes), float(sigma_edges),
                                                                              float(a), float(community_sigma_r),
@@ -67,13 +72,16 @@ def community_graph(n, density, k, ek_per=0.01, p_o=0, a=0.0, sigma_nodes=1.0, s
     return graph, node_positions, communities
 
 
-def single_process_graph(n, density, a=0, sigma_nodes=1, sigma_edges=1, connected=True, min_degree=1, seed=None):
+def single_process_graph(n, avg_deg, density=None, a=0, sigma_nodes=1, sigma_edges=1, connected=True, min_degree=1, seed=None):
     """
     This is the simplest graph model, it generates no communities.
     Generates graphs with a tunable level of assortativity by modfiying parameter a.
     """
     if seed is None:
         seed = int(time.time())
+
+    if density is None:
+        density = avg_deg * 1/(n-1)
 
     conn = 0
     if connected:
