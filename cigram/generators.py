@@ -20,8 +20,11 @@ import networkx
 from cigram.cmodel import generate_graph
 
 
-def community_graph(n, avg_deg, k, density=None, ek_per=0.01, p_o=0, a=0.0, sigma_nodes=1.0, sigma_edges=1.0, community_sigma_r=None,
-                    community_sigma_f=None, connected=True, seed=None, ret_com_pos=False, min_degree=1,
+def community_graph(n, avg_deg, k,
+                    density=None, ek_per=0.01, p_o=0, a=0.0,
+                    sigma_nodes=1.0, sigma_edges=1.0,
+                    community_sigma_r=None, community_sigma_f=None, connected=True,
+                    seed=None, ret_com_pos=False, min_degree=1,
                     min_community_size=0):
     """
     Generate a graph with a community structure
@@ -50,7 +53,7 @@ def community_graph(n, avg_deg, k, density=None, ek_per=0.01, p_o=0, a=0.0, sigm
 
     # Density overrides avg_k - weird behaviour but designed for some legacy code
     if density is None:
-        density = avg_k * 1/(n-1)
+        density = 2 * avg_deg * 1/(n-1)
 
     edges, communities, node_positions, community_positions = generate_graph(int(n), int(k), float(density),
                                                                              float(sigma_nodes), float(sigma_edges),
@@ -59,7 +62,7 @@ def community_graph(n, avg_deg, k, density=None, ek_per=0.01, p_o=0, a=0.0, sigm
                                                                              float(p_o), int(conn), int(min_degree),
                                                                              int(min_community_size), seed)
     graph = networkx.Graph()
-    graph.add_nodes_from(range(int(N)))
+    graph.add_nodes_from(range(int(n)))
     graph.add_edges_from(edges)
 
     communities = dict(enumerate(communities))
@@ -72,7 +75,8 @@ def community_graph(n, avg_deg, k, density=None, ek_per=0.01, p_o=0, a=0.0, sigm
     return graph, node_positions, communities
 
 
-def single_process_graph(n, avg_deg, density=None, a=0, sigma_nodes=1, sigma_edges=1, connected=True, min_degree=1, seed=None):
+def single_process_graph(n, avg_deg,
+                         density=None, a=0, sigma_nodes=1, sigma_edges=1, connected=True, min_degree=1, seed=None):
     """
     This is the simplest graph model, it generates no communities.
     Generates graphs with a tunable level of assortativity by modfiying parameter a.
@@ -81,14 +85,14 @@ def single_process_graph(n, avg_deg, density=None, a=0, sigma_nodes=1, sigma_edg
         seed = int(time.time())
 
     if density is None:
-        density = avg_deg * 1/(n-1)
+        density = 2 * avg_deg * 1/(n-1)
 
     conn = 0
     if connected:
         conn = 1
 
     edges, _, pos, _ = generate_graph(n, 1, density, sigma_nodes, sigma_edges, a, 1.0, 1.0, 0.0, 0.0, conn, min_degree,
-                                      seed)
+                                      0, seed)
 
     graph = networkx.Graph()
     graph.add_nodes_from(range(int(n)))
