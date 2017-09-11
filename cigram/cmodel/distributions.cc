@@ -126,7 +126,8 @@ std::vector<double> interCommunitySelectionScores (int n_i,
 
 			}
 		}
-		scores[i] = commProbs * beta[n_j] * exp(-a * (fabs(fabs(position) - fabs(theta[n_j])) + fabs(fabs(max_community[n_i]) - fabs(max_community[n_j]))));
+		scores[i] = commProbs * beta[n_j] * exp(-a * (fabs(fabs(position) - fabs(theta[n_j])) +
+		 fabs(fabs(max_community[n_i]) - fabs(max_community[n_j]))));
 		sum += scores[i];
 	}
 

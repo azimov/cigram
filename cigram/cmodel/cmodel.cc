@@ -15,6 +15,10 @@
  */
 #include <Python.h>
 
+#if PY_MAJOR_VERSION >= 3
+#define IS_PY3K
+#endif
+
 #include "generate_graph.h"
 
 #include <boost/config.hpp>
@@ -31,7 +35,8 @@ static PyObject* generate_graph(PyObject* self, PyObject* args)
 	double Density, sigmaF, sigmaR, communitySigmaF,  communitySigmaR, a, ek_per, overlapProb;
 
 	// Convert python arguments into
-	if (!PyArg_ParseTuple(args, "iiddddddddiiil", &N, &K, &Density, &sigmaF, &sigmaR, &a, &communitySigmaF, &communitySigmaR, &ek_per, &overlapProb, &formConnected, &minDegree, &minCommunitySize, &seed))
+	if (!PyArg_ParseTuple(args, "iiddddddddiiil", &N, &K, &Density, &sigmaF, &sigmaR, &a, &communitySigmaF,
+	 &communitySigmaR, &ek_per, &overlapProb, &formConnected, &minDegree, &minCommunitySize, &seed))
 		return NULL;
 	
 	/*
@@ -46,7 +51,8 @@ static PyObject* generate_graph(PyObject* self, PyObject* args)
 	std::vector<double> theta_communities;
 	std::vector<double> theta;
 
-	Graph G = generateGraph(N, K, Density, sigmaF, sigmaR, a, communitySigmaF, communitySigmaR, ek_per, overlapProb, theta, communities, theta_communities, formConnected, minDegree, minCommunitySize, seed);
+	Graph G = generateGraph(N, K, Density, sigmaF, sigmaR, a, communitySigmaF, communitySigmaR, ek_per, overlapProb,
+	 theta, communities, theta_communities, formConnected, minDegree, minCommunitySize, seed);
 	PyObject *edgeList = PyList_New(0);
 
 	// build edge list to be returned
@@ -107,7 +113,6 @@ static PyMethodDef CmodelMethods[] =
 
 // module initialization
 PyMODINIT_FUNC
-
 initcmodel(void)
 {
      (void) Py_InitModule("cmodel", CmodelMethods);
