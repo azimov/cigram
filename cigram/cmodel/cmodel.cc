@@ -15,10 +15,6 @@
  */
 #include <Python.h>
 
-#if PY_MAJOR_VERSION >= 3
-#define IS_PY3K
-#endif
-
 #include "generate_graph.h"
 
 #include <boost/config.hpp>
@@ -27,6 +23,18 @@
 #include <boost/graph/graph_utility.hpp>
 
 using namespace boost;
+
+struct module_state {
+    PyObject *error;
+};
+
+#if PY_MAJOR_VERSION >= 3
+#define GETSTATE(m) ((struct module_state*)PyModule_GetState(m))
+#else
+#define GETSTATE(m) (&_state)
+static struct module_state _state;
+#endif
+
 
 // wrapper for python
 static PyObject* generate_graph(PyObject* self, PyObject* args)
@@ -111,9 +119,55 @@ static PyMethodDef CmodelMethods[] =
 };
 
 
-// module initialization
+#if PY_MAJOR_VERSION >= 3
+
+static int Cmodel_traverse(PyObject *m, visitproc visit, void *arg) {
+    Py_VISIT(GETSTATE(m)->error);
+    return 0;
+}
+
+static int Cmodel_clear(PyObject *m) {
+    Py_CLEAR(GETSTATE(m)->error);
+    return 0;
+}
+
+
+static struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        "cmodel",
+        NULL,
+        sizeof(struct module_state),
+        CmodelMethods,
+        NULL,
+        Cmodel_traverse,
+        Cmodel_clear,
+        NULL
+};
+
+#define INITERROR return NULL
+// module initialization python 3
+PyMODINIT_FUNC
+PyInit_cmodel(void)
+{
+    PyObject *module = PyModule_Create(&moduledef);
+    if (module == NULL)
+        INITERROR;
+    struct module_state *st = GETSTATE(module);
+
+    st->error = PyErr_NewException("myextension.Error", NULL, NULL);
+    if (st->error == NULL) {
+        Py_DECREF(module);
+        INITERROR;
+    }
+
+    return module;
+}
+#else
+// module initialization python 2
+#define INITERROR return
 PyMODINIT_FUNC
 initcmodel(void)
 {
      (void) Py_InitModule("cmodel", CmodelMethods);
 }
+#endif
