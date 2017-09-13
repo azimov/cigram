@@ -45,14 +45,3 @@ graph is a networkx model, vertex_positions is a dict of vertex positions by nod
 If you do some analysis you will notice that this is not an erdos-renyi random graph and the communities vary in size; that's sort of the point.
 
 Fitting to real world networks is a trickier problem covered in more detail in the jupyter notebook notebooks/fitting.inbpy
-
--- Python 3 compatibility --
-Unfortunately the software developed here is only currently compatible with python >=2.7 due to the C++ implementation.
-Python 3 compatibility will be included at a later time and
-
--- Future plans --
-This work was developed by a stressed PhD student and, as such, there are several things left undone such as:
-
-* Comprehensive documentation
-* 100% pep8 compliance (sorry Guido)
-* Python 3 compatibility implemented in cigram/cmodel/cmodel.cc
