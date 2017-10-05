@@ -1,21 +1,5 @@
-"""
-CiGRAM - Gaussian Random grAph Model
-
-Copyright (C) 2014  James Gilbert
-
-This program is free software: you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful, but
-WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-more details: http://www.gnu.org/licenses/gpl.html
-"""
 from __future__ import division
 import json
-import multiprocessing
 import numpy as np
 import random
 import os
@@ -48,6 +32,7 @@ def sim_anneal():
     ea = inspyred.ec.SA(random)
     ea.terminator = inspyred.ec.terminators.evaluation_termination
     return ea
+
 
 model_store = {}
 
@@ -151,7 +136,7 @@ def default_observer(population, num_generations, num_evaluations, args):
 
 
 def optimise_model(model,
-                   num_cpus=multiprocessing.cpu_count(),
+                   num_cpus=mp.cpu_count(),
                    pop_size=50,
                    max_evals=10000,
                    num_replicates=5,

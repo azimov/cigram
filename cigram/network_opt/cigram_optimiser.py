@@ -33,7 +33,7 @@ class CigramOptimiser(object):
                  **kwargs):
         """
         Optimisation class to fit a given type of graph model.
-        This code could be generalised to another type of model to adapt the fitting procedure
+        This code of this class could be generalised to another type of model to adapt the fitting procedure
 
 
         :param g: networkx.Graph object to fit

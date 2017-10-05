@@ -2,7 +2,45 @@ from __future__ import division
 import networkx as nx
 import numpy as np
 from networkx.algorithms.approximation.clustering_coefficient import average_clustering
-from cigram.utils.analysis import ks_distance
+
+
+def ks_distance(g_degree, m_degree, d_min=1, normed=True):
+    """
+    Calculate the Kolmogorov-Smirnov distance between two distrubtions
+
+    This test is highly sensitive to the tail of the cumulative distrubtions
+    For this reason d_min truncates the values (by default) to 10.
+
+    Params:
+    g_degree, m_degree should be degree sequences (e.g. g.degree().values() for networkx)
+    """
+    cum_vals_g = []
+    cum_vals_m = []
+
+    for k in range(int(max(g_degree + m_degree)) + 1):
+        cum_vals_g.append(len([i for i in g_degree if i <= k]) / len(g_degree))
+        cum_vals_m.append(len([i for i in m_degree if i <= k]) / len(m_degree))
+
+    cum_vals_m = np.array(cum_vals_m[d_min:])
+    cum_vals_g = np.array(cum_vals_g[d_min:])
+
+    dists = np.abs(cum_vals_m - cum_vals_g)
+
+    # make the distance uniformly sensitive across the range, useful for fat tails
+    if normed:
+        valid_d = np.where(dists > 0)
+        # No point greater than 0, dists are identical
+        if len(dists[valid_d]) == 0:
+            return 0.0
+
+        denom = np.sqrt(cum_vals_m[valid_d] * (1 - cum_vals_m[valid_d]))
+        dists = dists[valid_d]
+        valid_d = np.where(denom > 0)
+
+        ds = dists[valid_d] / denom[valid_d]
+        return np.max(ds)
+
+    return np.max(dists)
 
 
 class SummaryStatFitness(object):
@@ -24,7 +62,8 @@ class SummaryStatFitness(object):
         self.cfw = clustering_fit_weight
         self.afw = assort_fit_weight
 
-    def graph_properties(self, g):
+    @staticmethod
+    def graph_properties(g):
         """
         compute the properties of the graph in question
         
@@ -39,8 +78,9 @@ class SummaryStatFitness(object):
         )
 
         return props
-    
-    def graph_fitness(self, prop_a, prop_b):
+
+    @staticmethod
+    def graph_fitness(prop_a, prop_b):
         """
         Summary statistics dissimmilarity
         """
@@ -65,7 +105,8 @@ class NoClusterSummaryFitness(object):
         self.dfw = degree_fit_weight
         self.afw = assort_fit_weight
 
-    def graph_properties(self, g):
+    @staticmethod
+    def graph_properties(g):
         """
         compute the properties of the graph in question (nx graph object)
         
@@ -79,8 +120,9 @@ class NoClusterSummaryFitness(object):
         )
 
         return props
-    
-    def graph_fitness(self, prop_a, prop_b):
+
+    @staticmethod
+    def graph_fitness(prop_a, prop_b):
         """
         Summary statistics dissimmilarity
         """
@@ -98,7 +140,8 @@ class DegreeDifference(object):
     def __init__(self, **kwargs):
         pass
 
-    def graph_properties(self, g):
+    @staticmethod
+    def graph_properties(g):
         """
         compute the properties of the graph in question (nx graph object)
         
@@ -112,7 +155,8 @@ class DegreeDifference(object):
 
         return c_degree_diff
 
-    def graph_fitness(self, degree_diff_a, degree_diff_b):
+    @staticmethod
+    def graph_fitness(degree_diff_a, degree_diff_b):
         """
         distance between cumulative degree difference distributions
         """
