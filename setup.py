@@ -22,6 +22,6 @@ setup(
     tests_require=['pytest'],
     url="http://cigram.ico2s.org",
     include_package_data=True,
-    packages=["cigram", "cigram.utils", "cigram.network_opt"],
+    packages=["cigram", "cigram.network_opt"],
     ext_modules=[cmodule],
 )
