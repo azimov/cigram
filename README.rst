@@ -15,6 +15,8 @@ Gilbert, J. P. "A probabilistic model for the evaluation of module extraction al
 
 Bibtex entry:
 
+.. code-block:: guess
+
     @phdthesis{gilbert2015probabilistic,
       title={A probabilistic model for the evaluation of module extraction algorithms in complex biological networks},
       author={Gilbert, JP},
