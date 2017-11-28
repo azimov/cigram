@@ -24,8 +24,8 @@ Bibtex entry:
 
 -- Installation --
 
-Use pip:
-    pip install cigram
+Clone repository and use pip:
+    pip install -e .
 
 Alternatively, the package developed here can be installed by cloning the git repository and running the command:
 
