@@ -20,12 +20,12 @@ import networkx
 from cigram.cmodel import generate_graph
 
 
-def community_graph(n, avg_deg, k,
-                    density=None, ek_per=0.01, p_o=0, a=0.0,
-                    sigma_nodes=1.0, sigma_edges=1.0,
-                    community_sigma_r=None, community_sigma_f=None, connected=True,
-                    seed=None, ret_com_pos=False, min_degree=1,
-                    min_community_size=0):
+def cigram_graph(n, avg_deg, k,
+                 density=None, ek_per=0.01, p_o=0, a=0.0,
+                 sigma_nodes=1.0, sigma_edges=1.0,
+                 community_sigma_r=None, community_sigma_f=None, connected=True,
+                 seed=None, ret_com_pos=False, min_degree=1,
+                 min_community_size=0):
     """
     Generate a graph with a community structure
 

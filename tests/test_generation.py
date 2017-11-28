@@ -1,12 +1,12 @@
 from __future__ import division, print_function
-from cigram import community_graph, single_process_graph
+from cigram import cigram_graph, single_process_graph
 import pytest
 import networkx as nx
 
 
 def test_generation():
     """Test that the cmodel functions"""
-    graph, positions, communities = community_graph(1000, 4.965, 3)
+    graph, positions, communities = cigram_graph(1000, 4.965, 3)
 
     assert graph.number_of_nodes() == 1000
     assert graph.number_of_edges() == 4965
@@ -14,7 +14,7 @@ def test_generation():
 
 def test_large_graph():
     """Test that larger graphs don't freeze. Should take a while to run"""
-    graph, positions, communities = community_graph(20000, 4.965, 3, sigma_edges=0.8, sigma_nodes=0.8)
+    graph, positions, communities = cigram_graph(20000, 4.965, 3, sigma_edges=0.8, sigma_nodes=0.8)
 
     assert graph.number_of_nodes() == 20000
     assert graph.number_of_edges() == 99300
@@ -54,7 +54,7 @@ def test_param_bound(params, test_funcs):
     if 'k' not in params:
         params['k'] = 3
 
-    graph, positions, communities = community_graph(**params)
+    graph, positions, communities = cigram_graph(**params)
     for k, (func, res_t) in test_funcs.items():
         # print statements are used for debug
         print(unmodified_params)

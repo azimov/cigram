@@ -9,7 +9,7 @@ Generating networks in CiGRAM is straightforward.
     n = 1000
     avg_k = 4.95
     k = 1
-    graph, positions, communities = generate_graph(n, avg_k, k)
+    graph, positions, communities = cigram_graph(n, avg_k, k)
 
 Here n is the number of nodes, avg_k is the desired average degree and k is the number of communities.
 Note that the number of communities here is fixed at 1, so the graph will not generate artificial clusters.
@@ -26,7 +26,7 @@ the connections between nodes.
 
     sigma_r = 0.8
     sigma_f = 0.8
-     graph, positions, communities = generate_graph(n, avg_k, k)
+    graph, positions, communities = cigram_graph(n, avg_k, k)
 
 
 To generate networks with assortativity this can be specified with the parameter a (by default this is 0).

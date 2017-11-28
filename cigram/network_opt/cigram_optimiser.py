@@ -3,7 +3,7 @@ Module contains classes for finding best fit GRAM parameters in the parameter se
 """
 from __future__ import division
 import networkx as nx
-from cigram import community_graph
+from cigram import cigram_graph
 import numpy as np
 
 import inspyred
@@ -150,7 +150,7 @@ class CigramOptimiser(object):
                 self.seed += 1
 
         logger.debug("Generating {0}".format(params))
-        g, _, _ = community_graph(**params)
+        g, _, _ = cigram_graph(**params)
         logger.debug("Generated {0}".format(params))
         return g
 

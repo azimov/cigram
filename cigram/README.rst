@@ -38,7 +38,7 @@ The current version of the model can be used to generate graphs with the wrapper
 To generate a random model with 1000 nodes, average degree of 5 split in to 5 communities
 
     import cigram
-    graph, vertex_positions, community_memberships = cigram.community_graph(1000, 5, 5)
+    graph, vertex_positions, community_memberships = cigram.cigram_graph(1000, 5, 5)
 
 graph is a networkx model, vertex_positions is a dict of vertex positions by node id, and community memberships is a dict of vertex memberships of each cluster.
 
