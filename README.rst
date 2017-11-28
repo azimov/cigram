@@ -29,9 +29,14 @@ Installation
 ------------
 
 Clone repository and use pip:
+
+.. code-block:: guess
+
     pip install -e .
 
 Alternatively, the package developed here can be installed by cloning the git repository and running the command:
+
+.. code-block:: guess
 
     python setup.py install
 
@@ -41,6 +46,8 @@ Usage
 The current version of the model can be used to generate graphs with the wrapper to the C++ model
 
 To generate a random model with 1000 nodes, average degree of 5 split in to 5 communities
+
+.. code-block:: python
 
     import cigram
     graph, vertex_positions, community_memberships = cigram.cigram_graph(1000, 5, 5)
