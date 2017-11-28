@@ -22,10 +22,14 @@ network fitting package within this project to match the desired properties of r
 This documentation intends only to give a high level overview of the project.
 For more details please see the initial publication of CiGRAM:
 
+Gilbert, J.P., 2015. A probabilistic model for the evaluation of module extraction algorithms in complex biological networks (Doctoral dissertation, University of Nottingham).
+http://eprints.nottingham.ac.uk/30524/
+
 Installation
 ------------
 
 Install with pip from pypi
+
 .. code-block:: guess
 
     pip install cigram
