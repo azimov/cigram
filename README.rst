@@ -28,11 +28,14 @@ Bibtex entry:
 Installation
 ------------
 
+Requires a C++ complier, libboost and python (versions 2.7+ and 3.5+ tested).
+
 Clone repository and use pip:
 
 .. code-block:: guess
 
-    pip install -e .
+    pip install -r requirements.txt
+    pip install .
 
 Alternatively, the package developed here can be installed by cloning the git repository and running the command:
 
@@ -53,7 +56,3 @@ To generate a random model with 1000 nodes, average degree of 5 split in to 5 co
     graph, vertex_positions, community_memberships = cigram.cigram_graph(1000, 5, 5)
 
 graph is a networkx model, vertex_positions is a dict of vertex positions by node id, and community memberships is a dict of vertex memberships of each cluster.
-
-If you do some analysis you will notice that this is not an erdos-renyi random graph and the communities vary in size; that's sort of the point.
-
-Fitting to real world networks is a trickier problem covered in more detail in the jupyter notebook notebooks/fitting.inbpy
