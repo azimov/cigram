@@ -6,7 +6,7 @@ Currently the model only supports unweighted, undirected graphs.
 
 For a demonstration and brief definition of some of the features of cigram at glance please see the web visualisation developed with help from Paweł Widera at from the School of Computing Science at Newcastle University:
 
-http://ico2s.org/cigram
+http://cigram.ico2s.org
 
 This work was developed as part of a PhD. If using this work in publications please cite the PhD thesis which also
 includes a comprehensive description of the network, its features and some applications (Chapters 4-5).
