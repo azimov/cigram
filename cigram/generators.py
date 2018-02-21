@@ -18,6 +18,7 @@ import time
 import networkx
 
 from cigram.cmodel import generate_graph
+from cigram.lfr_model import lfr_graph
 
 
 def cigram_graph(n, avg_deg, k,
@@ -99,3 +100,32 @@ def single_process_graph(n, avg_deg,
     graph.add_edges_from(edges)
 
     return graph, pos
+
+
+def lfr_benchmark_graph(**kwargs):
+    """
+        Parameters from command line
+        cout<<"-N\t\t[number of nodes]"<<endl;
+        cout<<"-k\t\t[average degree]"<<endl;
+        cout<<"-maxk\t\t[maximum degree]"<<endl;
+        cout<<"-mu\t\t[mixing parameter]"<<endl;
+        cout<<"-t1\t\t[minus exponent for the degree sequence]"<<endl;
+        cout<<"-t2\t\t[minus exponent for the community size distribution]"<<endl;
+        cout<<"-minc\t\t[minimum for the community sizes]"<<endl;
+        cout<<"-maxc\t\t[maximum for the community sizes]"<<endl;
+        cout<<"-on\t\t[number of overlapping nodes]"<<endl;
+        cout<<"-om\t\t[number of memberships of the overlapping nodes]"<<endl;
+        cout<<"-C\t\t[Average clustering coefficient]"<<endl;
+
+        cout<<"----------------------\n"<<endl;
+
+        cout<<"\n-------------------- Other options ---------------------------\n"<<endl;
+
+        cout<<"To have a random network use:"<<endl;
+        cout<<"-rand"<<endl;
+        cout<<"Using this option will set mu=0, and minc=maxc=N, i.e. there will be one only community."<<endl;
+
+        cout<<"Use option -sup (-inf) if you want to produce a benchmark whose distribution of the ratio of external degree/total degree ";
+        cout<<"is superiorly (inferiorly) bounded by the mixing parameter."<<endl;
+    """
+    lfr_graph()

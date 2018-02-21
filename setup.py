@@ -6,7 +6,20 @@ sources = [
      "cigram/cmodel/sample.cc",
      "cigram/cmodel/cmodel.cc",
 ]
+
+lfr_sources = [
+    "cigram/lfr_model/benchm.cpp",
+    "cigram/lfr_model/cast.cpp",
+    "cigram/lfr_model/cc.cpp",
+    "cigram/lfr_model/combinatorics.cpp",
+    "cigram/lfr_model/histograms.cpp",
+    "cigram/lfr_model/print.cpp",
+    "cigram/lfr_model/random.cpp",
+    "cigram/lfr_model/lfr_model.cc",
+]
+
 cmodule = Extension("cigram.cmodel", sources=sources, extra_compile_args=["-Ofast"])
+lfrmodule = Extension("cigram.lfr_model", sources=lfr_sources, extra_compile_args=["-Ofast"])
 
 setup(
     name="cigram",
@@ -23,5 +36,5 @@ setup(
     url="http://cigram.ico2s.org",
     include_package_data=True,
     packages=["cigram", "cigram.network_opt"],
-    ext_modules=[cmodule],
+    ext_modules=[lfrmodule, cmodule],
 )

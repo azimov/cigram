@@ -71,7 +71,6 @@ static PyObject* generate_graph(PyObject* self, PyObject* args)
 		Py_DECREF(tup);
 	}
 
-
 	PyObject *communityList = PyList_New(0);
 	// build community list of lists to be returned
 	for (uint i = 0; i < communities.size(); ++i){
