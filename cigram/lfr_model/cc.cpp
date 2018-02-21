@@ -25,7 +25,7 @@ int common_neighbors(int a, int b, deque<set<int> > & en) {
 double compute_cc(deque<set<int> > & en, int i) {
 
 
-		
+
 	double number_of_triangles=0;
 	for (set<int>::iterator iti=en[i].begin(); iti!=en[i].end(); iti++) {
 		number_of_triangles+=common_neighbors(i, *iti, en);
@@ -34,8 +34,8 @@ double compute_cc(deque<set<int> > & en, int i) {
 	}
 		
 	return number_of_triangles/((en[i].size())*(en[i].size()-1.));
-	
-	
+
+
 }
 
 
@@ -44,27 +44,27 @@ double compute_cc(deque<set<int> > & en) {
 
 
 	double cc=0;
-	
+
 
 	for(int i=0; i<en.size(); i++) {
-		
-		
+
+
 		double number_of_triangles=0;
 		for (set<int>::iterator iti=en[i].begin(); iti!=en[i].end(); iti++) {
 			number_of_triangles+=common_neighbors(i, *iti, en);
-		
+
 		}
-			
-		
+
+
 		cc+=number_of_triangles/((en[i].size())*(en[i].size()-1.));
-		
+
 	}
-	
+
 	cc/=en.size();
-	
-	
-	
-	
+
+
+
+
 	return cc;
 
 
@@ -78,12 +78,12 @@ double compute_tot_t(deque<set<int> > & en) {
 
 
 	double number_of_triangles=0;
-	
+
 
 	for(int i=0; i<en.size(); i++)
 		for (set<int>::iterator iti=en[i].begin(); iti!=en[i].end(); iti++)
 			number_of_triangles+=common_neighbors(i, *iti, en);
-	
+
 
 	return number_of_triangles;
 
@@ -93,22 +93,22 @@ double compute_tot_t(deque<set<int> > & en) {
 
 
 int choose_the_least(deque<set<int> > & en, deque<int> & A, int a, int & cn_a_o) {
-	
-	
+
+
 	int old_node;
 	shuffle_s(A);
-	
+
 	cn_a_o=en[a].size();
-				
+
 	for(int i=0; i<A.size(); i++) {
-		
+
 		int nec=common_neighbors(a, A[i], en);
 		if(nec < cn_a_o) {
-		
+
 			old_node=A[i];
 			cn_a_o=nec;
 		}
-		
+
 		if(cn_a_o==0)
 			return old_node;
 	}
@@ -124,30 +124,30 @@ int choose_the_least(deque<set<int> > & en, deque<int> & A, int a, int & cn_a_o)
 
 int cclu(deque<set<int> > & en, const deque<deque<int> > & member_list, const deque<deque<int> > & member_matrix, double ca) {
 
-	
-		
-	
+
+
+
 	double cc0=compute_cc(en);
 	cout<<"Average Clustering coefficient... "<<cc0<<" trying to reach "<<ca<<endl;
-	
-	
+
+
 	deque<double> ccs;
 	for(int i=0; i<en.size(); i++)
 		ccs.push_back(compute_cc(en, i));
-	
-	
-	
+
+
+
 	double min_relative_inc=1e-6;
 	//int number_of_triangles=compute_tot_t(en);
-	
+
 	int num_p=min(int(en.size()/10), 5);
-	
+
 	while(cc0 < ca) {
-	
-		
+
+
 		double ccold=cc0;
-		
-		
+
+
 		for(int y=0; y<num_p; y++) for(int Ai=0; Ai<en.size(); Ai++) {
 			
 			

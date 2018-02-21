@@ -12,14 +12,12 @@ lfr_sources = [
     "cigram/lfr_model/cast.cpp",
     "cigram/lfr_model/cc.cpp",
     "cigram/lfr_model/combinatorics.cpp",
-    "cigram/lfr_model/histograms.cpp",
-    "cigram/lfr_model/print.cpp",
     "cigram/lfr_model/random.cpp",
     "cigram/lfr_model/lfr_model.cc",
 ]
 
 cmodule = Extension("cigram.cmodel", sources=sources, extra_compile_args=["-Ofast"])
-lfrmodule = Extension("cigram.lfr_model", sources=lfr_sources, extra_compile_args=["-Ofast"])
+lfrmodule = Extension("cigram.lfr_model", sources=lfr_sources, extra_compile_args=["-Wno-undef", "-Ofast"])
 
 setup(
     name="cigram",

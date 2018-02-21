@@ -29,9 +29,8 @@ struct module_state {
 static struct module_state _state;
 #endif
 
-
 // wrapper for python
-static PyObject* lfr_graph(PyObject* self, PyObject* args)
+static PyObject* generate_graph(PyObject* self, PyObject* args)
 {
 
     double  average_k,  tau, tau2, mixing_parameter, ca;
@@ -68,7 +67,7 @@ static PyObject* lfr_graph(PyObject* self, PyObject* args)
 //  define functions in module
 static PyMethodDef LFRmodelMethods[] =
 {
-     {"lfr_graph", lfr_graph, METH_VARARGS, "generate graph with specified parameters"},
+     {"generate_graph", generate_graph, METH_VARARGS, "generate graph with specified parameters"},
      {NULL, NULL, 0, NULL}
 };
 
@@ -101,7 +100,7 @@ static struct PyModuleDef moduledef = {
 #define INITERROR return NULL
 // module initialization python 3
 PyMODINIT_FUNC
-PyInit_lfrmodel(void)
+PyInit_lfr_model(void)
 {
     PyObject *module = PyModule_Create(&moduledef);
     if (module == NULL)
@@ -120,7 +119,7 @@ PyInit_lfrmodel(void)
 // module initialization python 2
 #define INITERROR return
 PyMODINIT_FUNC
-initcmodel(void)
+initlfr_model(void)
 {
      (void) Py_InitModule("lfr_model", LFRmodelMethods);
 }

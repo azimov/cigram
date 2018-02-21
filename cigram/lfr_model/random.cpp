@@ -1,6 +1,4 @@
 #include "standard_include.h"
-#include "random.h"
-
 
 double ran2(long *idum) {
 	int j;
@@ -91,7 +89,7 @@ int configuration_model(deque<set<int> > & en, deque<int> & degrees) {
 	// this function is to build a network with the degree seq in degrees which is sorted (correspondence is based on the vectorial index)
 	if(degrees.size()<3) {
 		
-		cerr<<"it seems that some communities should have only 2 nodes! This does not make much sense (in my opinion) Please change some parameters!"<<endl;
+		//cerr<<"it seems that some communities should have only 2 nodes! This does not make much sense (in my opinion) Please change some parameters!"<<endl;
 		return -1;
 	
 	}
@@ -102,7 +100,7 @@ int configuration_model(deque<set<int> > & en, deque<int> & degrees) {
 
 	{
 		set<int> first;
-		for(int i=0; i<degrees.size(); i++) 
+		for(uint i=0; i<degrees.size(); i++) 
 			en.push_back(first);
 	}
 	
@@ -110,7 +108,7 @@ int configuration_model(deque<set<int> > & en, deque<int> & degrees) {
 	
 	multimap <int, int> degree_node;
 	
-	for(int i=0; i<degrees.size(); i++)
+	for(uint i=0; i<degrees.size(); i++)
 		degree_node.insert(degree_node.end(), make_pair(degrees[i], i));
 	
 	int var=0;
@@ -125,7 +123,7 @@ int configuration_model(deque<set<int> > & en, deque<int> & degrees) {
 		
 		int inserted=0;
 		
-		for (int i=0; i<itlast->first; i++) {
+		for(uint i=0; i<itlast->first; i++) {
 			
 			if(itit!=degree_node.begin()) {
 			
@@ -146,7 +144,7 @@ int configuration_model(deque<set<int> > & en, deque<int> & degrees) {
 		}
 		
 		
-		for (int i=0; i<erasenda.size(); i++) {
+		for(uint i=0; i<erasenda.size(); i++) {
 			
 			
 			if(erasenda[i]->first>1)
@@ -166,7 +164,7 @@ int configuration_model(deque<set<int> > & en, deque<int> & degrees) {
 	
 	// this is to randomize the subgraph -------------------------------------------------------------------
 	
-	for(int node_a=0; node_a<degrees.size(); node_a++) for(int krm=0; krm<en[node_a].size(); krm++) {
+	for(uint node_a=0; node_a<degrees.size(); node_a++) for(uint krm=0; krm<en[node_a].size(); krm++) {
 	
 					
 				

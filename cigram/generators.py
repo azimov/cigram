@@ -18,7 +18,7 @@ import time
 import networkx
 
 from cigram.cmodel import generate_graph
-from cigram.lfr_model import lfr_graph
+import cigram.lfr_model
 
 
 def cigram_graph(n, avg_deg, k,
@@ -128,4 +128,5 @@ def lfr_benchmark_graph(**kwargs):
         cout<<"Use option -sup (-inf) if you want to produce a benchmark whose distribution of the ratio of external degree/total degree ";
         cout<<"is superiorly (inferiorly) bounded by the mixing parameter."<<endl;
     """
-    lfr_graph()
+    pass
+    #lfr_graph()

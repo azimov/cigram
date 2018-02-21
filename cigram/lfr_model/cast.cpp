@@ -1,5 +1,4 @@
 #include "standard_include.h"
-#include "cast.h"
 
 bool cast_string_to_double (string &b, double &h) {
 
@@ -26,7 +25,7 @@ bool cast_string_to_double (string &b, double &h) {
 	
 	
 	int digits_before=0;
-	for(int i=0; i<b.size(); i++)
+	for(uint i=0; i<b.size(); i++)
 		if(b[i]!='.')
 			digits_before++;
 		else
@@ -83,7 +82,7 @@ int cast_int(double u) {
 
 int cast_string_to_char(string &file_name, char *b) {
 
-	for (int i=0; i<file_name.size(); i++)
+	for(uint i=0; i<file_name.size(); i++)
 		b[i]=file_name[i];
 	b[file_name.size()]='\0';	
 

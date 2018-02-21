@@ -1,20 +1,5 @@
 #include <Python.h>
 
-#include <math.h>
-#include <iostream>
-#include <deque>
-#include <set>
-#include <vector>
-#include <map>
-#include <string>
-#include <fstream>
-#include <ctime>
-#include <iterator>
-#include <algorithm>
-
-using namespace std;
-
-/* benchm.cpp functions */
 bool they_are_mate(int a, int b, const deque<deque<int> > & member_list);
 int deque_int_sum(const deque<int> & a);
 double integral (double a, double b);
