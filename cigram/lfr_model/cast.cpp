@@ -1,7 +1,5 @@
-#if !defined(CAST_INCLUDED)
-#define CAST_INCLUDED	
-
 #include "standard_include.h"
+#include "cast.h"
 
 bool cast_string_to_double (string &b, double &h) {
 
@@ -92,5 +90,3 @@ int cast_string_to_char(string &file_name, char *b) {
 	return 0;
 
 }
-
-#endif

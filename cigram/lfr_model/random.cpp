@@ -1,25 +1,5 @@
-#if !defined(RANDOM_INCLUDED)
-#define RANDOM_INCLUDED	
-	
-
-
-#define R2_IM1 2147483563
-#define R2_IM2 2147483399
-#define R2_AM (1.0/R2_IM1)
-#define R2_IMM1 (R2_IM1-1)
-#define R2_IA1 40014
-#define R2_IA2 40692
-#define R2_IQ1 53668
-#define R2_IQ2 52774
-#define R2_IR1 12211
-#define R2_IR2 3791
-#define R2_NTAB 32
-#define R2_NDIV (1+R2_IMM1/R2_NTAB)
-#define R2_EPS 1.2e-7
-#define R2_RNMX (1.0-R2_EPS)
-
-
 #include "standard_include.h"
+#include "random.h"
 
 
 double ran2(long *idum) {
@@ -104,31 +84,6 @@ int irand(int n) {
 	return (int(ran4()*(n+1)));
 	
 }
-
-
-void srand_file(void) {
-
-	ifstream in("time_seed.dat");
-	int seed;
-	
-	if (!in.is_open())
-		seed=21111983;
-	else
-		in>>seed;
-	
-	if (seed < 1 || seed>R2_IM2)
-		seed=1;
-	
-	
-	srand5(seed);
-	ofstream out("time_seed.dat");
-	out<<seed+1<<endl;
-	
-
-}
-
-
-
 
 int configuration_model(deque<set<int> > & en, deque<int> & degrees) {
 	
@@ -263,8 +218,3 @@ int configuration_model(deque<set<int> > & en, deque<int> & degrees) {
 
 
 }
-
-
-
-
-#endif

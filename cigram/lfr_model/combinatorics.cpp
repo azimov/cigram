@@ -1,8 +1,5 @@
-#if !defined(COMBINATORICS_INCLUDED)
-#define COMBINATORICS_INCLUDED	
-
 #include "standard_include.h"
-
+#include "combinatorics.h"
 
 template <typename Seq>
 double average_func(Seq &sq) {
@@ -426,5 +423,3 @@ int random_from_set(set<int> & s) {
 
 
 }
-
-#endif

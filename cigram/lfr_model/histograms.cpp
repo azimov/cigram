@@ -1,10 +1,5 @@
-
-
-
-#if !defined(HISTOGRAMS_INCLUDED)
-#define HISTOGRAMS_INCLUDED
-
 #include "standard_include.h"
+#include "histograms.h"
 
 template <typename type>
 int log_histogram(deque<type> &c, ostream & out, int number_of_bins) {		// c is the set od data, min is the lower bound, max is the upper one
@@ -648,10 +643,3 @@ int int_histogram (deque <int> &c, ostream & out) {
 
 
 }
-
-
-
-
-#endif
-
-

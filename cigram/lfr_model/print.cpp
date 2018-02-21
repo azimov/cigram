@@ -1,9 +1,5 @@
-#if !defined(PRINT_INCLUDED)
-#define PRINT_INCLUDED	
-
-
 #include "standard_include.h"
-
+#include "print.h"
 
 int cherr() {
 	
@@ -132,8 +128,6 @@ void prints(multimap <uno, due> &sq) {
 	
 }
 
-
-
 template <typename Seq>
 void prints(Seq &sq) {
 
@@ -146,7 +140,6 @@ void prints(Seq &sq) {
 	
 }
 
-
 template <typename type>
 void prints(const deque<type> & sq) {
 	
@@ -156,10 +149,6 @@ void prints(const deque<type> & sq) {
 	
 		
 }
-
-
-
-
 
 template<typename T, template<typename> class C>
 void printm(C<T>& c) { 
@@ -172,11 +161,3 @@ void printm(C<T>& c) {
 
 	cout<<endl;
 } 
-
-
-
-
-
-
-
-#endif

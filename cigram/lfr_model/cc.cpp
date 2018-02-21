@@ -1,5 +1,5 @@
 #include "standard_include.h"
-
+#include "cc.h"
 
 int common_neighbors(int a, int b, deque<set<int> > & en) {
 	

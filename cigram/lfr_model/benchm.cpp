@@ -1,6 +1,3 @@
-
-
-
 /*
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *                                                                               *
@@ -28,9 +25,8 @@
  *                                                                               *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  */
-
 #include "standard_include.h"
-
+#include "benchm.h"
 
 bool they_are_mate(int a, int b, const deque<deque<int> > & member_list) {
 	for(int i=0; i<member_list[a].size(); i++) {
@@ -1473,225 +1469,97 @@ int erase_links(deque<set<int> > & E, const deque<deque<int> > & member_list, co
 	
 }
 
-int print_network(deque<set<int> > & E, const deque<deque<int> > & member_list, const deque<deque<int> > & member_matrix, deque<int> & num_seq) {
+int generate_benchmark(bool excess, bool defect, int num_nodes, double  average_k, int  max_degree, double  tau, double  tau2,
+	double  mixing_parameter, int  overlapping_nodes, int  overlap_membership, int  nmin, int  nmax, bool  fixed_range,
+	double ca, PyObject* edgeList, PyObject* communityList) {
 
-	
-	int edges=0;
-
-		
-	int num_nodes=member_list.size();
-	
-	deque<double> double_mixing;
-	for (int i=0; i<E.size(); i++) {
-		
-		double one_minus_mu = double(internal_kin(E, member_list, i))/E[i].size();
-		
-		double_mixing.push_back(1.- one_minus_mu);
-				
-		edges+=E[i].size();
-		
-	}
-	
-	
-	//cout<<"\n----------------------------------------------------------"<<endl;
-	//cout<<endl;
-	
-	
-	
-	double density=0; 
-	double sparsity=0;
-	
-	for (int i=0; i<member_matrix.size(); i++) {
-
-		double media_int=0;
-		double media_est=0;
-		
-		for (int j=0; j<member_matrix[i].size(); j++) {
-			
-			
-			double kinj = double(internal_kin_only_one(E[member_matrix[i][j]], member_matrix[i]));
-			media_int+= kinj;
-			media_est+=E[member_matrix[i][j]].size() - double(internal_kin_only_one(E[member_matrix[i][j]], member_matrix[i]));
-					
-		}
-		
-		double pair_num=(member_matrix[i].size()*(member_matrix[i].size()-1));
-		double pair_num_e=((num_nodes-member_matrix[i].size())*(member_matrix[i].size()));
-		
-		if(pair_num!=0)
-			density+=media_int/pair_num;
-		if(pair_num_e!=0)
-			sparsity+=media_est/pair_num_e;
-		
-		
-	
-	}
-	
-	density=density/member_matrix.size();
-	sparsity=sparsity/member_matrix.size();
-	
-	
-	
-
-
-	ofstream out1("network.dat");
-	for (int u=0; u<E.size(); u++) {
-
-		set<int>::iterator itb=E[u].begin();
-	
-		while (itb!=E[u].end())
-			out1<<u+1<<"\t"<<*(itb++)+1<<endl;
-		
-		
-
-	}
-		
-
-	
-	ofstream out2("community.dat");
-
-	for (int i=0; i<member_list.size(); i++) {
-		
-		out2<<i+1<<"\t";
-		for (int j=0; j<member_list[i].size(); j++)
-			out2<<member_list[i][j]+1<<" ";
-		out2<<endl;
-	
-	}
-
-	cout<<"\n\n---------------------------------------------------------------------------"<<endl;
-	
-	
-	cout<<"network of "<<num_nodes<<" vertices and "<<edges/2<<" edges"<<";\t average degree = "<<double(edges)/num_nodes<<endl;
-	cout<<"\naverage mixing parameter: "<<average_func(double_mixing)<<" +/- "<<sqrt(variance_func(double_mixing))<<endl;
-	cout<<"p_in: "<<density<<"\tp_out: "<<sparsity<<endl;
-
-	
-	
-	ofstream statout("statistics.dat");
-	
-	deque<int> degree_seq;
-	for (int i=0; i<E.size(); i++)
-		degree_seq.push_back(E[i].size());
-	
-	statout<<"degree distribution (probability density function of the degree in logarithmic bins) "<<endl;
-	log_histogram(degree_seq, statout, 10);
-	statout<<"\ndegree distribution (degree-occurrences) "<<endl;
-	int_histogram(degree_seq, statout);
-	statout<<endl<<"--------------------------------------"<<endl;
-
-		
-	statout<<"community distribution (size-occurrences)"<<endl;
-	int_histogram(num_seq, statout);
-	statout<<endl<<"--------------------------------------"<<endl;
-
-	statout<<"mixing parameter"<<endl;
-	not_norm_histogram(double_mixing, statout, 20, 0, 0);
-	statout<<endl<<"--------------------------------------"<<endl;
-	
-	
-	
-
-
-	cout<<endl<<endl;
-
-	return 0;
-
-}
-
-int benchmark(bool excess, bool defect, int num_nodes, double  average_k, int  max_degree, double  tau, double  tau2, 
-	double  mixing_parameter, int  overlapping_nodes, int  overlap_membership, int  nmin, int  nmax, bool  fixed_range, double ca) {	
-
-	
-	
-	
-	
 	double dmin=solve_dmin(max_degree, average_k, -tau);
 	if (dmin==-1)
 		return -1;
-	
+
 	int min_degree=int(dmin);
-	
-	
+
 	double media1=integer_average(max_degree, min_degree, tau);
 	double media2=integer_average(max_degree, min_degree+1, tau);
-	
+
 	if (fabs(media1-average_k)>fabs(media2-average_k))
 		min_degree++;
 
-	// range for the community sizes
 	if (!fixed_range) {
-	
 		nmax=max_degree;
 		nmin=max(int(min_degree), 3);
-		cout<<"-----------------------------------------------------------"<<endl;
-		cout<<"community size range automatically set equal to ["<<nmin<<" , "<<nmax<<"]"<<endl;
-		
-
+		// cout<<"-----------------------------------------------------------"<<endl;
+		// cout<<"community size range automatically set equal to ["<<nmin<<" , "<<nmax<<"]"<<endl;
 	}
 
-	//----------------------------------------------------------------------------------------------------
-	
-	
+
 	deque <int> degree_seq ;		//  degree sequence of the nodes
 	deque <double> cumulative;
 	powerlaw(max_degree, min_degree, tau, cumulative);
-	
+
 	for (int i=0; i<num_nodes; i++) {
-		
+
 		int nn=lower_bound(cumulative.begin(), cumulative.end(), ran4())-cumulative.begin()+min_degree;
 		degree_seq.push_back(nn);
-	
+
 	}
-	
-	
-	
+
 	sort(degree_seq.begin(), degree_seq.end());
-		
+
 	if(deque_int_sum(degree_seq) % 2!=0)
 		degree_seq[max_element(degree_seq.begin(), degree_seq.end()) - degree_seq.begin()]--;
-	
-	
+
 	deque<deque<int> >  member_matrix;
 	deque<int> num_seq;
 	deque<int> internal_degree_seq;
-	
-	// ********************************			internal_degree and membership			***************************************************
 
-	
-	
+	// ****** internal_degree and membership
 
 	if(internal_degree_and_membership(mixing_parameter, overlapping_nodes, overlap_membership, num_nodes, member_matrix, excess, defect, degree_seq, num_seq, internal_degree_seq, fixed_range, nmin, nmax, tau2)==-1)
 		return -1;
-	
-	
-	
+
 	deque<set<int> > E;					// E is the adjacency matrix written in form of list of edges
 	deque<deque<int> > member_list;		// row i cointains the memberships of node i
 	deque<deque<int> > link_list;		// row i cointains degree of the node i respect to member_list[i][j]; there is one more number that is the external degree
 
-	
-	cout<<"building communities... "<<endl;
+	// cout<<"building communities... "<<endl;
 	if(build_subgraphs(E, member_matrix, member_list, link_list, internal_degree_seq, degree_seq, excess, defect)==-1)
-		return -1;	
+		return -1;
 
-	cout<<"connecting communities... "<<endl;
+	// cout<<"connecting communities... "<<endl;
 	connect_all_the_parts(E, member_list, link_list);
 
 	if(erase_links(E, member_list, excess, defect, mixing_parameter)==-1)
 		return -1;
 
-	
 	if(ca!=unlikely) {
-		cout<<"trying to approach an average clustering coefficient ... "<<ca<<endl;
+		// cout<<"trying to approach an average clustering coefficient ... "<<ca<<endl;
 		cclu(E, member_list, member_matrix, ca);
 	}
 
-	cout<<"recording network..."<<endl;	
-	print_network(E, member_list, member_matrix, num_seq);
+	// cout<<"recording network..."<<endl;
+    for (int u=0; u < E.size(); u++) {
 
-		
+		set<int>::iterator itb=E[u].begin();
+
+		while (itb!=E[u].end()) {
+		    // Creates a python tuple, appends it to list, dereferences the tuple
+		    PyObject *tup = Py_BuildValue("(ii)", u+1, *(itb++)+1);
+		    PyList_Append(edgeList, tup);
+		    Py_DECREF(tup);
+        }
+	}
+
+	// building communities
+	// This differs from the C++ implementation slightly,
+	// The list returned is a tuple for community memberships (vertex_id, membership)
+	// This is best handled at the python interface
+	for (int i = 0; i < member_list.size(); i++){
+		for (int j=0; j < member_list[i].size(); j++) {
+			PyObject *tup = Py_BuildValue("(ii)", i+1, member_list[i][j]+1);
+		    PyList_Append(communityList, tup);
+		    Py_DECREF(tup); // Always dereference python objects!
+	    }
+	}
 	return 0;
-	
 }
-

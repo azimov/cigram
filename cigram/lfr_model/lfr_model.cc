@@ -17,6 +17,7 @@
 
 #include "standard_include.h"
 
+
 struct module_state {
     PyObject *error;
 };
@@ -28,102 +29,6 @@ struct module_state {
 static struct module_state _state;
 #endif
 
-
-
-int generate_benchmark(bool excess, bool defect, int num_nodes, double  average_k, int  max_degree, double  tau, double  tau2,
-	double  mixing_parameter, int  overlapping_nodes, int  overlap_membership, int  nmin, int  nmax, bool  fixed_range,
-	double ca, PyObject* edgeList, PyObject* communityList) {
-
-	double dmin=solve_dmin(max_degree, average_k, -tau);
-	if (dmin==-1)
-		return -1;
-
-	int min_degree=int(dmin);
-
-	double media1=integer_average(max_degree, min_degree, tau);
-	double media2=integer_average(max_degree, min_degree+1, tau);
-
-	if (fabs(media1-average_k)>fabs(media2-average_k))
-		min_degree++;
-
-	if (!fixed_range) {
-		nmax=max_degree;
-		nmin=max(int(min_degree), 3);
-		// cout<<"-----------------------------------------------------------"<<endl;
-		// cout<<"community size range automatically set equal to ["<<nmin<<" , "<<nmax<<"]"<<endl;
-	}
-
-
-	deque <int> degree_seq ;		//  degree sequence of the nodes
-	deque <double> cumulative;
-	powerlaw(max_degree, min_degree, tau, cumulative);
-
-	for (int i=0; i<num_nodes; i++) {
-
-		int nn=lower_bound(cumulative.begin(), cumulative.end(), ran4())-cumulative.begin()+min_degree;
-		degree_seq.push_back(nn);
-
-	}
-
-	sort(degree_seq.begin(), degree_seq.end());
-
-	if(deque_int_sum(degree_seq) % 2!=0)
-		degree_seq[max_element(degree_seq.begin(), degree_seq.end()) - degree_seq.begin()]--;
-
-	deque<deque<int> >  member_matrix;
-	deque<int> num_seq;
-	deque<int> internal_degree_seq;
-
-	// ****** internal_degree and membership
-
-	if(internal_degree_and_membership(mixing_parameter, overlapping_nodes, overlap_membership, num_nodes, member_matrix, excess, defect, degree_seq, num_seq, internal_degree_seq, fixed_range, nmin, nmax, tau2)==-1)
-		return -1;
-
-	deque<set<int> > E;					// E is the adjacency matrix written in form of list of edges
-	deque<deque<int> > member_list;		// row i cointains the memberships of node i
-	deque<deque<int> > link_list;		// row i cointains degree of the node i respect to member_list[i][j]; there is one more number that is the external degree
-
-	// cout<<"building communities... "<<endl;
-	if(build_subgraphs(E, member_matrix, member_list, link_list, internal_degree_seq, degree_seq, excess, defect)==-1)
-		return -1;
-
-	// cout<<"connecting communities... "<<endl;
-	connect_all_the_parts(E, member_list, link_list);
-
-	if(erase_links(E, member_list, excess, defect, mixing_parameter)==-1)
-		return -1;
-
-	if(ca!=unlikely) {
-		// cout<<"trying to approach an average clustering coefficient ... "<<ca<<endl;
-		cclu(E, member_list, member_matrix, ca);
-	}
-
-	// cout<<"recording network..."<<endl;
-    for (int u=0; u < E.size(); u++) {
-
-		set<int>::iterator itb=E[u].begin();
-
-		while (itb!=E[u].end()) {
-		    // Creates a python tuple, appends it to list, dereferences the tuple
-		    PyObject *tup = Py_BuildValue("(ii)", u+1, *(itb++)+1);
-		    PyList_Append(edgeList, tup);
-		    Py_DECREF(tup);
-        }
-	}
-
-	// building communities
-	// This differs from the C++ implementation slightly,
-	// The list returned is a tuple for community memberships (vertex_id, membership)
-	// This is best handled at the python interface
-	for (int i = 0; i < member_list.size(); i++){
-		for (int j=0; j < member_list[i].size(); j++) {
-			PyObject *tup = Py_BuildValue("(ii)", i+1, member_list[i][j]+1);
-		    PyList_Append(communityList, tup);
-		    Py_DECREF(tup); // Always dereference python objects!
-	    }
-	}
-	return 0;
-}
 
 // wrapper for python
 static PyObject* lfr_graph(PyObject* self, PyObject* args)
