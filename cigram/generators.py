@@ -145,21 +145,21 @@ def lfr_benchmark_graph(n, average_degree, max_degree, mu, tau=2.0, tau2=1.0, mi
 
     # Order and types really matter here
     params = (
-        n,
-        average_degree,
-        tau,
-        tau2,
-        mu,
+        int(n),
+        float(average_degree),
+        float(tau),
+        float(tau2),
+        float(mu),
         clustering,
-        max_degree,
-        overlapping_nodes,
-        overlapping_memberships,
-        minc_size,
-        maxc_size,
-        seed,
-        excess,
-        defect,
-        fixed_range,
+        int(max_degree),
+        int(overlapping_nodes),
+        int(overlapping_memberships),
+        int(minc_size),
+        int(maxc_size),
+        int(seed),
+        bool(excess),
+        bool(defect),
+        bool(fixed_range),
     )
 
     edges, communities = cigram.lfr_model.generate_graph(*params)
