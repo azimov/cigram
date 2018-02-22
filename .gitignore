@@ -6,3 +6,11 @@
 .idea/vcs.xml_bk
 .idea/workspace.xml
 cigram/cmodel.so
+*.so
+build/*
+.eggs/*
+.cache/*
+cigram.egg-info/
+cigram/__pycache__/
+dist/*
+tests/__pycache__/*
