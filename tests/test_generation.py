@@ -1,5 +1,5 @@
 from __future__ import division, print_function
-from cigram import cigram_graph, single_process_graph
+from cigram import cigram_graph, single_process_graph, lfr_benchmark_graph
 import pytest
 import networkx as nx
 
@@ -32,7 +32,7 @@ def test_sp_generation():
     ({"a": 5}, {"assort": (lambda g, p, c: nx.degree_assortativity_coefficient(g), lambda r: r > 0.2)}),
     ({"sigma_nodes": 0.5, 'sigma_edges': 0.5}, {}),
     ({"sigma_nodes": 5.0, 'sigma_edges': 5.0}, {}),
-    ({"density": 1.0}, {"desnsity": (lambda g, p, c: nx.density(g), lambda r: r == 1.0)}),
+    ({"density": 1.0}, {"desnsity": (lambda g, p, c: nx.density(g), lambda r: r >= 0.99)}),
     ({"community_sigma_f": 0.5, "community_sigma_r": 0.5}, {}),
     ({"community_sigma_f": 5.0, "community_sigma_r": 5.0}, {})
 ])
@@ -62,3 +62,21 @@ def test_param_bound(params, test_funcs):
         fr = func(graph, positions, communities)
         print(fr)
         assert res_t(fr)
+
+
+def test_lfr_basic():
+    params = {
+        'n': 10000,
+        'average_degree': 10,
+        'max_degree': 1000,
+        'mu': 0.5,
+        'tau': 2.0,
+        'tau2': 2.0,
+        'minc_size': 3,
+        'maxc_size': 1000,
+        'overlapping_nodes': 0,
+        'overlapping_memberships': 1,
+        'seed': 1337
+    }
+    graph, comms = lfr_benchmark_graph(**params)
+    assert graph.number_of_nodes() == 10000

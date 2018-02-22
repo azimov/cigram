@@ -17,8 +17,11 @@ from __future__ import division
 import time
 import networkx
 
-from cigram.cmodel import generate_graph
+import cigram.cmodel
 import cigram.lfr_model
+from collections import defaultdict
+
+UNLIKELY = -214741
 
 
 def cigram_graph(n, avg_deg, k,
@@ -56,7 +59,8 @@ def cigram_graph(n, avg_deg, k,
     if density is None:
         density = 2 * avg_deg * 1/(n-1)
 
-    edges, communities, node_positions, community_positions = generate_graph(int(n), int(k), float(density),
+    edges, communities, node_positions, community_positions = cigram.cmodel.generate_graph(int(n), int(k),
+                                                                                           float(density),
                                                                              float(sigma_nodes), float(sigma_edges),
                                                                              float(a), float(community_sigma_r),
                                                                              float(community_sigma_f), float(ek_per),
@@ -92,8 +96,8 @@ def single_process_graph(n, avg_deg,
     if connected:
         conn = 1
 
-    edges, _, pos, _ = generate_graph(n, 1, density, sigma_nodes, sigma_edges, a, 1.0, 1.0, 0.0, 0.0, conn, min_degree,
-                                      0, seed)
+    edges, _, pos, _ = cigram.cmodel.generate_graph(n, 1, density, sigma_nodes, sigma_edges, a, 1.0, 1.0, 0.0, 0.0,
+                                                    conn, min_degree, 0, seed)
 
     graph = networkx.Graph()
     graph.add_nodes_from(range(int(n)))
@@ -102,31 +106,72 @@ def single_process_graph(n, avg_deg,
     return graph, pos
 
 
-def lfr_benchmark_graph(**kwargs):
+def lfr_benchmark_graph(n, average_degree, max_degree, mu, tau=2.0, tau2=1.0, minc_size=3, maxc_size=None,
+                        overlapping_nodes=0,
+                        overlapping_memberships=0, clustering=UNLIKELY,
+                        rand=False, sup=False, inf=False,
+                        nodewise_membership=False, seed=None):
     """
-        Parameters from command line
-        cout<<"-N\t\t[number of nodes]"<<endl;
-        cout<<"-k\t\t[average degree]"<<endl;
-        cout<<"-maxk\t\t[maximum degree]"<<endl;
-        cout<<"-mu\t\t[mixing parameter]"<<endl;
-        cout<<"-t1\t\t[minus exponent for the degree sequence]"<<endl;
-        cout<<"-t2\t\t[minus exponent for the community size distribution]"<<endl;
-        cout<<"-minc\t\t[minimum for the community sizes]"<<endl;
-        cout<<"-maxc\t\t[maximum for the community sizes]"<<endl;
-        cout<<"-on\t\t[number of overlapping nodes]"<<endl;
-        cout<<"-om\t\t[number of memberships of the overlapping nodes]"<<endl;
-        cout<<"-C\t\t[Average clustering coefficient]"<<endl;
+    Calls external C library implementation of the LFR benchmark model graph
 
-        cout<<"----------------------\n"<<endl;
-
-        cout<<"\n-------------------- Other options ---------------------------\n"<<endl;
-
-        cout<<"To have a random network use:"<<endl;
-        cout<<"-rand"<<endl;
-        cout<<"Using this option will set mu=0, and minc=maxc=N, i.e. there will be one only community."<<endl;
-
-        cout<<"Use option -sup (-inf) if you want to produce a benchmark whose distribution of the ratio of external degree/total degree ";
-        cout<<"is superiorly (inferiorly) bounded by the mixing parameter."<<endl;
+    :param n: number of nodes
+    :param average_degree: average degree of nodes
+    :param max_degree: maximum degree of nodes
+    :param mu: community mixing parameter
+    :param tau: degree power law exponent
+    :param tau2: community size power law exponent
+    :param minc_size: minimum community size
+    :param maxc_size: maximum community size
+    :param overlapping_nodes: number of overlapping nodes
+    :param overlapping_membership:
+    :param clustering: Fixed clustering coefficient NOTE - not properly test. Can hang
+    :param rand: generate a random network TODO: implement this
+    :param sup: #TODO
+    :param inf: #TODO
+    :return: graph, memberships - networkx.Graph and dict of community membership
     """
-    pass
-    #lfr_graph()
+    if sup and inf:
+        raise ValueError("sup and inf cannot both be true.")
+
+    excess = False
+    defect = False
+    fixed_range = False
+
+    if maxc_size is None:
+        maxc_size = n
+
+    if seed is None:
+        seed = int(time.time())
+
+    # Order and types really matter here
+    params = (
+        n,
+        average_degree,
+        tau,
+        tau2,
+        mu,
+        clustering,
+        max_degree,
+        overlapping_nodes,
+        overlapping_memberships,
+        minc_size,
+        maxc_size,
+        seed,
+        excess,
+        defect,
+        fixed_range,
+    )
+
+    edges, communities = cigram.lfr_model.generate_graph(*params)
+
+    graph = networkx.Graph()
+    graph.add_edges_from(edges)
+    memberships = defaultdict(list)
+
+    for v, c in communities:
+        if nodewise_membership:
+            memberships[v].append(c)
+        else:
+            memberships[c].append(v)
+
+    return graph, memberships

@@ -38,12 +38,9 @@ static PyObject* generate_graph(PyObject* self, PyObject* args)
 	bool fixed_range, excess, defect;
 	long seed;
 
-    excess = false;
-    defect = false;
-
 	// Convert python arguments into c
-	if (!PyArg_ParseTuple(args, "iiddddiiiiibl", &num_nodes, &average_k, &tau, &tau2, &mixing_parameter, &ca,
-	   &max_degree, &overlapping_nodes, &overlap_membership, &nmin, &nmax, &fixed_range, &seed))
+	if (!PyArg_ParseTuple(args, "idddddiiiiilbbb", &num_nodes, &average_k, &tau, &tau2, &mixing_parameter, &ca,
+	   &max_degree, &overlapping_nodes, &overlap_membership, &nmin, &nmax,  &seed, &excess, &defect, &fixed_range))
 		return NULL;
 
     // Set the seed from python (no need for seed.dat file)
@@ -52,11 +49,13 @@ static PyObject* generate_graph(PyObject* self, PyObject* args)
     PyObject *edgeList = PyList_New(0);
 	PyObject *communityList = PyList_New(0);
 
-	// build edge list to be returned
+	// build edge list to be returned, release the GIL
+	Py_BEGIN_ALLOW_THREADS
     generate_benchmark(excess, defect, num_nodes, average_k, max_degree, tau, tau2,
 	                    mixing_parameter, overlapping_nodes, overlap_membership, nmin, nmax, fixed_range,
 	                    ca, edgeList, communityList);
 
+    Py_END_ALLOW_THREADS
 	// Derefence our very large lists
 	PyObject *tup_return = Py_BuildValue("(OO)", edgeList, communityList);
 	Py_DECREF(edgeList);

@@ -24,6 +24,8 @@ Bibtex entry:
       school={University of Nottingham}
     }
 
+This library also includes Lancichinetti–Fortunato–Radicchi (LFR) binary benchmark graphs.
+Future versions plan to include all the LFR benchmarks (weighted, directed and hierarchical networks).
 
 Installation
 ------------
