@@ -59,13 +59,24 @@ def cigram_graph(n, avg_deg, k,
     if density is None:
         density = 2 * avg_deg * 1/(n-1)
 
-    edges, communities, node_positions, community_positions = cigram.cmodel.generate_graph(int(n), int(k),
-                                                                                           float(density),
-                                                                             float(sigma_nodes), float(sigma_edges),
-                                                                             float(a), float(community_sigma_r),
-                                                                             float(community_sigma_f), float(ek_per),
-                                                                             float(p_o), int(conn), int(min_degree),
-                                                                             int(min_community_size), seed)
+    params = (
+        int(n),
+        int(k),
+        float(density),
+        float(sigma_nodes),
+        float(sigma_edges),
+        float(a),
+        float(community_sigma_r),
+        float(community_sigma_f),
+        float(ek_per),
+        float(p_o),
+        int(conn),
+        int(min_degree),
+        int(min_community_size),
+        seed
+    )
+
+    edges, communities, node_positions, community_positions = cigram.cmodel.generate_graph(*params)
     graph = networkx.Graph()
     graph.add_nodes_from(range(int(n)))
     graph.add_edges_from(edges)
@@ -73,6 +84,8 @@ def cigram_graph(n, avg_deg, k,
     communities = dict(enumerate(communities))
     node_positions = dict(enumerate(node_positions))
     community_positions = dict(enumerate(community_positions))
+
+    graph.name = "cigram_" + "-".join([str(p) for p in params])
 
     if ret_com_pos:
         return graph, node_positions, communities, community_positions
@@ -96,13 +109,30 @@ def single_process_graph(n, avg_deg,
     if connected:
         conn = 1
 
-    edges, _, pos, _ = cigram.cmodel.generate_graph(n, 1, density, sigma_nodes, sigma_edges, a, 1.0, 1.0, 0.0, 0.0,
-                                                    conn, min_degree, 0, seed)
+    params = (
+        int(n),
+        1,
+        int(density),
+        int(sigma_nodes),
+        int(sigma_edges),
+        int(a),
+        1.0,
+        1.0,
+        0.0,
+        0.0,
+        bool(conn),
+        int(min_degree),
+        0,
+        int(seed)
+    )
+
+    edges, _, pos, _ = cigram.cmodel.generate_graph(*params)
 
     graph = networkx.Graph()
     graph.add_nodes_from(range(int(n)))
     graph.add_edges_from(edges)
 
+    graph.name = "cigram_" + "-".join([str(p) for p in params])
     return graph, pos
 
 
@@ -162,6 +192,7 @@ def lfr_benchmark_graph(n, average_degree, max_degree, mu, tau=2.0, tau2=1.0, mi
         bool(fixed_range),
     )
 
+    # Call to external C function
     edges, communities = cigram.lfr_model.generate_graph(*params)
 
     graph = networkx.Graph()
@@ -173,5 +204,7 @@ def lfr_benchmark_graph(n, average_degree, max_degree, mu, tau=2.0, tau2=1.0, mi
             memberships[v].append(c)
         else:
             memberships[c].append(v)
+
+    graph.name = "lfr_binary_" + "-".join([str(p) for p in params])
 
     return graph, memberships
