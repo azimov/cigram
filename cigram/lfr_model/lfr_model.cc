@@ -33,13 +33,13 @@ static struct module_state _state;
 static PyObject* generate_graph(PyObject* self, PyObject* args)
 {
 
-    double  average_k,  tau, tau2, mixing_parameter, ca;
+    double  average_k,  tau, tau2, mixing_parameter, clustering;
 	int num_nodes, max_degree, overlapping_nodes, overlap_membership, nmin, nmax;
 	bool fixed_range, excess, defect;
 	long seed;
 
 	// Convert python arguments into c
-	if (!PyArg_ParseTuple(args, "idddddiiiiilbbb", &num_nodes, &average_k, &tau, &tau2, &mixing_parameter, &ca,
+	if (!PyArg_ParseTuple(args, "idddddiiiiilbbb", &num_nodes, &average_k, &tau, &tau2, &mixing_parameter, &clustering,
 	   &max_degree, &overlapping_nodes, &overlap_membership, &nmin, &nmax,  &seed, &excess, &defect, &fixed_range))
 		return NULL;
 
@@ -53,7 +53,7 @@ static PyObject* generate_graph(PyObject* self, PyObject* args)
 	Py_BEGIN_ALLOW_THREADS
     generate_benchmark(excess, defect, num_nodes, average_k, max_degree, tau, tau2,
 	                    mixing_parameter, overlapping_nodes, overlap_membership, nmin, nmax, fixed_range,
-	                    ca, edgeList, communityList);
+	                    clustering, edgeList, communityList);
 
     Py_END_ALLOW_THREADS
 	// Derefence our very large lists

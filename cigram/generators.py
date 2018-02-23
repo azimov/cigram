@@ -180,7 +180,7 @@ def lfr_benchmark_graph(n, average_degree, max_degree, mu, tau=2.0, tau2=1.0, mi
         float(tau),
         float(tau2),
         float(mu),
-        clustering,
+        float(clustering),
         int(max_degree),
         int(overlapping_nodes),
         int(overlapping_memberships),
