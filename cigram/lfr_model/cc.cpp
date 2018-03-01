@@ -42,12 +42,9 @@ double compute_cc(deque<set<int> > & en, int i) {
 
 double compute_cc(deque<set<int> > & en) {
 
-
 	double cc=0;
 
-
-	for(int i=0; i<en.size(); i++) {
-
+	for(uint i=0; i < en.size(); i++) {
 
 		double number_of_triangles=0;
 		for (set<int>::iterator iti=en[i].begin(); iti!=en[i].end(); iti++) {
@@ -55,20 +52,11 @@ double compute_cc(deque<set<int> > & en) {
 
 		}
 
-
 		cc+=number_of_triangles/((en[i].size())*(en[i].size()-1.));
-
 	}
-
 	cc/=en.size();
 
-
-
-
 	return cc;
-
-
-
 
 }
 
@@ -76,31 +64,27 @@ double compute_cc(deque<set<int> > & en) {
 
 double compute_tot_t(deque<set<int> > & en) {
 
-
 	double number_of_triangles=0;
 
-
-	for(int i=0; i<en.size(); i++)
-		for (set<int>::iterator iti=en[i].begin(); iti!=en[i].end(); iti++)
+	for(uint i=0; i<en.size(); i++) {
+		for (set<int>::iterator iti=en[i].begin(); iti!=en[i].end(); iti++) {
 			number_of_triangles+=common_neighbors(i, *iti, en);
-
+        }
+    }
 
 	return number_of_triangles;
-
-
 
 }
 
 
 int choose_the_least(deque<set<int> > & en, deque<int> & A, int a, int & cn_a_o) {
 
-
-	int old_node;
+	int old_node = -1;
 	shuffle_s(A);
 
 	cn_a_o=en[a].size();
 
-	for(int i=0; i<A.size(); i++) {
+	for(uint i=0; i<A.size(); i++) {
 
 		int nec=common_neighbors(a, A[i], en);
 		if(nec < cn_a_o) {
@@ -113,13 +97,8 @@ int choose_the_least(deque<set<int> > & en, deque<int> & A, int a, int & cn_a_o)
 			return old_node;
 	}
 
-
 	return old_node;
-
-
 }
-
-
 
 
 int cclu(deque<set<int> > & en, const deque<deque<int> > & member_list, const deque<deque<int> > & member_matrix, double ca) {
@@ -132,7 +111,7 @@ int cclu(deque<set<int> > & en, const deque<deque<int> > & member_list, const de
 
 
 	deque<double> ccs;
-	for(int i=0; i<en.size(); i++)
+	for(uint i=0; i<en.size(); i++)
 		ccs.push_back(compute_cc(en, i));
 
 
@@ -148,7 +127,7 @@ int cclu(deque<set<int> > & en, const deque<deque<int> > & member_list, const de
 		double ccold=cc0;
 
 
-		for(int y=0; y<num_p; y++) for(int Ai=0; Ai<en.size(); Ai++) {
+		for(int y=0; y<num_p; y++) for(uint Ai=0; Ai<en.size(); Ai++) {
 			
 			
 			

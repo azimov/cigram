@@ -123,7 +123,7 @@ int configuration_model(deque<set<int> > & en, deque<int> & degrees) {
 		
 		int inserted=0;
 		
-		for(uint i=0; i<itlast->first; i++) {
+		for(int i=0; i<itlast->first; i++) {
 			
 			if(itit!=degree_node.begin()) {
 			
@@ -160,28 +160,23 @@ int configuration_model(deque<set<int> > & en, deque<int> & degrees) {
 		
 	}
 
-	
-	
 	// this is to randomize the subgraph -------------------------------------------------------------------
-	
 	for(uint node_a=0; node_a<degrees.size(); node_a++) for(uint krm=0; krm<en[node_a].size(); krm++) {
-	
-					
+		uint random_mate = irand(degrees.size()-1);
+		while (random_mate == node_a)
+			random_mate = irand(degrees.size()-1);
 				
-		int random_mate=irand(degrees.size()-1);
-		while (random_mate==node_a)
-			random_mate=irand(degrees.size()-1);
-				
-		
+
 		if (en[node_a].insert(random_mate).second) {
 			
 			deque <int> out_nodes;
-			for (set<int>::iterator it_est=en[node_a].begin(); it_est!=en[node_a].end(); it_est++) if ((*it_est)!=random_mate)
-				out_nodes.push_back(*it_est);
-						
-										
+			for (set<int>::iterator it_est=en[node_a].begin(); it_est!=en[node_a].end(); it_est++) {
+			    if ((*it_est)!= (int) random_mate) {
+				    out_nodes.push_back(*it_est);
+                }
+            }
 					
-			int old_node=out_nodes[irand(out_nodes.size()-1)];
+			int old_node = out_nodes[irand(out_nodes.size()-1)];
 					
 			en[node_a].erase(old_node);
 			en[random_mate].insert(node_a);
@@ -200,19 +195,9 @@ int configuration_model(deque<set<int> > & en, deque<int> & degrees) {
 			en[node_h].erase(random_mate);
 			en[node_h].insert(old_node);
 			en[old_node].insert(node_h);
-			
-			
 		}
-		
-		
 	}
 
-	
-	
-
 	return 0;
-
-
-
 
 }

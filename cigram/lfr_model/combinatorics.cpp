@@ -130,27 +130,22 @@ double log_combination (int n, int k) {
 
 double binomial(int n, int x, double p) {		//	returns the binomial distribution, n trials, x successes, p probability
 
-	if (p==0)
+	if (p==0) {
 		if (x==0)
 			return 1;
 		else
 			return 0;
-
-	if (p>=1)
+    }
+	if (p>=1) {
 		if (x==n)
 			return 1;
 		else
 			return 0;
-
-
-
+    }
 
 	double log_b=0;
 	log_b+=log_combination(n, x)+x*log(p)+(n-x)*log(1-p);
 	return (exp(log_b));
-
-
-
 }
 
 //to draw a number:
@@ -215,7 +210,7 @@ int distribution_from_cumulative(const deque<double> &cum, deque<double> &distr)
 
 	distr.clear();
 	double previous=0;
-	for (int i=0; i<cum.size(); i++) {
+	for (uint i=0; i < cum.size(); i++) {
 		distr.push_back(cum[i]-previous);
 		previous=cum[i];
 	}
@@ -232,7 +227,7 @@ int cumulative_from_distribution (deque<double> &cum, const deque<double> &distr
 
 	cum.clear();
 	double sum=0;
-	for (int i=0; i<distr.size(); i++) {
+	for (uint i=0; i < distr.size(); i++) {
 		sum+=distr[i];
 		cum.push_back(sum);
 	}
@@ -274,7 +269,7 @@ int shuffle_s(deque<int> & sq) {
 	if(siz==0)
 		return -1;
 
-	for (int i=0; i<sq.size(); i++) {
+	for (uint i=0; i < sq.size(); i++) {
 
 		int random_pos=irand(siz-1);
 
@@ -385,23 +380,18 @@ double compute_hypergeometric(int i, int k, int kout, int m) {
 
 	//prints(den);
 
-	for(int h=0; h<den.size(); h++) if(den[h]<=0) {
+	for(uint h=0; h < den.size(); h++) if(den[h]<=0) {
 		cerr<<"denominator has zero or less (in the hypergeometric)"<<endl;
 		return 0;
 
 	}
 
-	for(int h=0; h<num.size(); h++) if(num[h]<=0) {
+	for(uint h=0; h < num.size(); h++) if(num[h]<=0) {
 		cerr<<"numerator has zero or less (in the hypergeometric)"<<endl;
 		return 0;
 
 	}
-
-
-
-	//cout<<"sizes: "<<num.size()<<" "<<den.size()<<endl;
-
-	for (int i=0; i<num.size(); i++)
+	for (uint i=0; i < num.size(); i++)
 		prod=prod*num[i]/den[i];
 
 	return prod;
@@ -412,14 +402,11 @@ double compute_hypergeometric(int i, int k, int kout, int m) {
 
 int random_from_set(set<int> & s) {
 
-
 	int pos1=irand(s.size()-1);
 	set<int>::iterator it1=s.begin();
 		for(int i=0; i<pos1; i++)
 			it1++;
 	
 	return *it1;
-
-
 
 }

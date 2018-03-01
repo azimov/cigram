@@ -49,13 +49,11 @@ static PyObject* generate_graph(PyObject* self, PyObject* args)
     PyObject *edgeList = PyList_New(0);
 	PyObject *communityList = PyList_New(0);
 
-	// build edge list to be returned, release the GIL
-	Py_BEGIN_ALLOW_THREADS
+	// build edge list to be returned,
     generate_benchmark(excess, defect, num_nodes, average_k, max_degree, tau, tau2,
 	                    mixing_parameter, overlapping_nodes, overlap_membership, nmin, nmax, fixed_range,
 	                    clustering, edgeList, communityList);
 
-    Py_END_ALLOW_THREADS
 	// Derefence our very large lists
 	PyObject *tup_return = Py_BuildValue("(OO)", edgeList, communityList);
 	Py_DECREF(edgeList);

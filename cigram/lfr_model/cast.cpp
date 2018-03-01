@@ -47,9 +47,9 @@ bool cast_string_to_double (string &b, double &h) {
 	}
 	
 	
-	j=digits_before+1;
+	j = digits_before+1;
 	
-	while (j<b.size()) {
+	while (j < (int) b.size()) {
 		
 		int number=(int(b[j])-48);
 		h+=number*pow(10, digits_before-j);

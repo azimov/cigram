@@ -64,8 +64,8 @@ def test_param_bound(params, test_funcs):
         assert res_t(fr)
 
 
-def test_lfr_basic():
-    params = {
+@pytest.mark.parametrize("params", [
+    {
         'n': 10000,
         'average_degree': 10,
         'max_degree': 1000,
@@ -78,5 +78,9 @@ def test_lfr_basic():
         'overlapping_memberships': 1,
         'seed': 1337
     }
+])
+def test_lfr(params):
+    graph, positions = single_process_graph(1000, 4.965)
+    print("ooo")
     graph, comms = lfr_benchmark_graph(**params)
     assert graph.number_of_nodes() == 10000
