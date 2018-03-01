@@ -8,11 +8,16 @@
 #include <string>
 #include <iterator>
 #include <algorithm>
+#include <Python.h>
 
 using namespace std;
+
+enum logtypes {INFO, WARNING, ERROR, DEBUG};
+void log_msg(int type, char const *msg);
 
 #include "benchm.h"
 #include "random.h"
 #include "combinatorics.h"
 #include "cast.h"
 #include "cc.h"
+

@@ -1,4 +1,3 @@
-#include <Python.h>
 
 bool they_are_mate(int a, int b, const deque<deque<int> > & member_list);
 int deque_int_sum(const deque<int> & a);

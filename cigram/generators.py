@@ -21,7 +21,14 @@ import cigram.cmodel
 import cigram.lfr_model
 from collections import defaultdict
 
+import logging
+
 UNLIKELY = -214741
+
+FORMAT = '%(asctime)s %(message)s'
+logging.basicConfig(format=FORMAT, datefmt='%m/%d/%Y %I:%M:%S %p')
+logger = logging.getLogger('cigram.generators')
+logger.setLevel(logging.DEBUG)
 
 
 def cigram_graph(n, avg_deg, k,
@@ -193,7 +200,9 @@ def lfr_benchmark_graph(n, average_degree, max_degree, mu, tau=2.0, tau2=1.0, mi
     )
 
     # Call to external C function
+    logger.debug("Calling LFR Code")
     edges, communities = cigram.lfr_model.generate_graph(*params)
+    logger.debug("Exit LFR Code")
 
     graph = networkx.Graph()
     graph.add_edges_from(edges)

@@ -1,20 +1,15 @@
 #include "standard_include.h"
 
 bool cast_string_to_double (string &b, double &h) {
-
 // set h= the number written in b[]; 
 // return false if there is an error
-	
-	
+
 	h=0;
-	
-	
 	if(b.size()==0)
 		return false;
 	
 	int sign=1;
-	
-	
+
 	 if (b[0]=='-') {
 		
 		b[0]='0';
@@ -22,15 +17,12 @@ bool cast_string_to_double (string &b, double &h) {
 	 
 	 }
 	
-	
-	
 	int digits_before=0;
 	for(uint i=0; i<b.size(); i++)
 		if(b[i]!='.')
 			digits_before++;
 		else
 			break;
-	
 	
 	int j=0;
 	
@@ -45,8 +37,7 @@ bool cast_string_to_double (string &b, double &h) {
 		
 		j++;
 	}
-	
-	
+
 	j = digits_before+1;
 	
 	while (j < (int) b.size()) {

@@ -381,13 +381,13 @@ double compute_hypergeometric(int i, int k, int kout, int m) {
 	//prints(den);
 
 	for(uint h=0; h < den.size(); h++) if(den[h]<=0) {
-		cerr<<"denominator has zero or less (in the hypergeometric)"<<endl;
+		log_msg(ERROR, "denominator has zero or less (in the hypergeometric)");
 		return 0;
 
 	}
 
 	for(uint h=0; h < num.size(); h++) if(num[h]<=0) {
-		cerr<<"numerator has zero or less (in the hypergeometric)"<<endl;
+		log_msg(ERROR, "numerator has zero or less (in the hypergeometric)");
 		return 0;
 
 	}
@@ -395,7 +395,6 @@ double compute_hypergeometric(int i, int k, int kout, int m) {
 		prod=prod*num[i]/den[i];
 
 	return prod;
-
 
 
 }

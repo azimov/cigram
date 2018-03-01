@@ -29,10 +29,56 @@ struct module_state {
 static struct module_state _state;
 #endif
 
+
+/***********************************************************/
+/* define logging function and logtypes for python.logging */
+/* modified from gist by H.Dickten 2014                    */
+/***********************************************************/
+
+void log_msg(int type, char const *msg)
+{
+    static PyObject *logging = NULL;
+    static PyObject *logger = NULL;
+    static PyObject *pystring = NULL;
+
+    // import logging module on demand
+    if (logging == NULL){
+        logging = PyImport_ImportModuleNoBlock("logging");
+        if (logging == NULL)
+            PyErr_SetString(PyExc_ImportError,
+                "Could not import module 'logging'");
+    }
+
+    pystring = Py_BuildValue("s", "cigram.generators");
+    logger = PyObject_CallMethod(logging, "getLogger", "O", pystring);
+    // build msg-string
+    pystring = Py_BuildValue("s", msg);
+
+    // call function depending on loglevel
+    switch (type)
+    {
+        case INFO:
+            PyObject_CallMethod(logger, "info", "O", pystring);
+            break;
+
+        case WARNING:
+            PyObject_CallMethod(logger, "warn", "O", pystring);
+            break;
+
+        case ERROR:
+            PyObject_CallMethod(logger, "error", "O", pystring);
+            break;
+
+        case DEBUG:
+            PyObject_CallMethod(logger, "debug", "O", pystring);
+            break;
+    }
+    Py_DECREF(pystring);
+}
+
 // wrapper for python
 static PyObject* generate_graph(PyObject* self, PyObject* args)
 {
-
     double  average_k,  tau, tau2, mixing_parameter, clustering;
 	int num_nodes, max_degree, overlapping_nodes, overlap_membership, nmin, nmax;
 	bool fixed_range, excess, defect;
@@ -44,16 +90,20 @@ static PyObject* generate_graph(PyObject* self, PyObject* args)
 		return NULL;
 
     // Set the seed from python (no need for seed.dat file)
+    log_msg(DEBUG, "Setting random seed");
     srand5(seed);
 
     PyObject *edgeList = PyList_New(0);
 	PyObject *communityList = PyList_New(0);
+
+    log_msg(DEBUG, "Generating benchmark");
 
 	// build edge list to be returned,
     generate_benchmark(excess, defect, num_nodes, average_k, max_degree, tau, tau2,
 	                    mixing_parameter, overlapping_nodes, overlap_membership, nmin, nmax, fixed_range,
 	                    clustering, edgeList, communityList);
 
+    log_msg(DEBUG, "Benchmark complete");
 	// Derefence our very large lists
 	PyObject *tup_return = Py_BuildValue("(OO)", edgeList, communityList);
 	Py_DECREF(edgeList);

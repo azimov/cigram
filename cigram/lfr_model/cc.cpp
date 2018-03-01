@@ -12,11 +12,7 @@ int common_neighbors(int a, int b, deque<set<int> > & en) {
 		if(en[b].find(*iti)!=en[b].end())
 			number_of_triangles++;
 
-	
-	
 	return number_of_triangles;
-
-
 
 }
 
@@ -24,26 +20,17 @@ int common_neighbors(int a, int b, deque<set<int> > & en) {
 //*
 double compute_cc(deque<set<int> > & en, int i) {
 
-
-
 	double number_of_triangles=0;
 	for (set<int>::iterator iti=en[i].begin(); iti!=en[i].end(); iti++) {
 		number_of_triangles+=common_neighbors(i, *iti, en);
-		
-		
 	}
 		
 	return number_of_triangles/((en[i].size())*(en[i].size()-1.));
 
-
 }
 
-
-
 double compute_cc(deque<set<int> > & en) {
-
 	double cc=0;
-
 	for(uint i=0; i < en.size(); i++) {
 
 		double number_of_triangles=0;
@@ -51,7 +38,6 @@ double compute_cc(deque<set<int> > & en) {
 			number_of_triangles+=common_neighbors(i, *iti, en);
 
 		}
-
 		cc+=number_of_triangles/((en[i].size())*(en[i].size()-1.));
 	}
 	cc/=en.size();
@@ -63,17 +49,13 @@ double compute_cc(deque<set<int> > & en) {
 
 
 double compute_tot_t(deque<set<int> > & en) {
-
 	double number_of_triangles=0;
-
 	for(uint i=0; i<en.size(); i++) {
 		for (set<int>::iterator iti=en[i].begin(); iti!=en[i].end(); iti++) {
 			number_of_triangles+=common_neighbors(i, *iti, en);
         }
     }
-
 	return number_of_triangles;
-
 }
 
 
@@ -103,18 +85,14 @@ int choose_the_least(deque<set<int> > & en, deque<int> & A, int a, int & cn_a_o)
 
 int cclu(deque<set<int> > & en, const deque<deque<int> > & member_list, const deque<deque<int> > & member_matrix, double ca) {
 
-
-
-
 	double cc0=compute_cc(en);
-	cout<<"Average Clustering coefficient... "<<cc0<<" trying to reach "<<ca<<endl;
 
+	std::string message =  "Average Clustering coefficient... " + std::to_string(cc0) + " trying to reach " + std::to_string(ca);
+	log_msg(INFO, message.c_str());
 
 	deque<double> ccs;
 	for(uint i=0; i<en.size(); i++)
 		ccs.push_back(compute_cc(en, i));
-
-
 
 	double min_relative_inc=1e-6;
 	//int number_of_triangles=compute_tot_t(en);
@@ -122,16 +100,9 @@ int cclu(deque<set<int> > & en, const deque<deque<int> > & member_list, const de
 	int num_p=min(int(en.size()/10), 5);
 
 	while(cc0 < ca) {
-
-
 		double ccold=cc0;
-
-
 		for(int y=0; y<num_p; y++) for(uint Ai=0; Ai<en.size(); Ai++) {
-			
-			
-			
-			// ************************************************  rewiring
+			// rewiring
 			
 			while(true) {
 				
@@ -229,25 +200,18 @@ int cclu(deque<set<int> > & en, const deque<deque<int> > & member_list, const de
 				
 			}
 			
-			// ************************************************  rewiring
-			
-			
-			
-			
+			// rewiring
+
 		}
-		
-		
 		cc0=compute_cc(en);
 		
 		if(cc0-ccold < min_relative_inc * cc0) {
-			
-			cout<<"It seems I cannot reach the wished value. I'll stop here..."<<endl;
+			log_msg(DEBUG, "It seems I cannot reach the wished value. I'll stop here...");
 			break;
 		
 		
 		}
-		
-		
+
 		num_p=cast_int((ca-cc0)/ (cc0-ccold)) * num_p;
 		
 		if(num_p<=0)
@@ -255,8 +219,9 @@ int cclu(deque<set<int> > & en, const deque<deque<int> > & member_list, const de
 		if(num_p>50)
 			num_p=50;
 
-		
-		cout<<"Average Clustering coefficient... "<<cc0<<" trying to reach "<<ca<<"\t\t expected "<<num_p<<" more step(s) "<<endl;
+        std::string message =  "Average Clustering coefficient... " + std::to_string(cc0) +
+         " trying to reach " + std::to_string(ca) + "\t\t expected " + std::to_string(num_p) + " more step(s) ";
+		log_msg(DEBUG, message.c_str());
 
 	}
 	

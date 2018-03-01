@@ -27,7 +27,6 @@
  */
 #include "standard_include.h"
 
-
 bool they_are_mate(int a, int b, const deque<deque<int> > & member_list) {
 	for(uint i=0; i < member_list[a].size(); i++) {
 		if(binary_search(member_list[b].begin(), member_list[b].end(), member_list[a][i]))
@@ -69,16 +68,13 @@ double solve_dmin(const double& dmax, const double &dmed, const double &gamma) {
 
 	if ((average_k1-dmed>0) || (average_k2-dmed<0)) {
 
-		cerr<<"\n***********************\nERROR: the average degree is out of range:";
-
+        log_msg(ERROR, "The average degree is out of range:");
 		if (average_k1-dmed>0) {
-			cerr<<"\nyou should increase the average degree (bigger than "<<average_k1<<")"<<endl;
-			cerr<<"(or decrease the maximum degree...)"<<endl;
+		    log_msg(ERROR, "Increase the average degree  decrease the maximum degree... ");
 		}
 
 		if (average_k2-dmed<0) {
-			cerr<<"\nyou should decrease the average degree (smaller than "<<average_k2<<")"<<endl;
-			cerr<<"(or increase the maximum degree...)"<<endl;
+		    log_msg(ERROR, "Decrease the average degree or increase the maximum degree... ");
 		}
 
 		return -1;
@@ -283,10 +279,10 @@ int build_bipartite_network(deque<deque<int> >  & member_matrix, const deque<int
 
 int internal_degree_and_membership (double mixing_parameter, int overlapping_nodes, int max_mem_num, int num_nodes, deque<deque<int> >  & member_matrix,
 bool excess, bool defect,  deque<int> & degree_seq, deque<int> &num_seq, deque<int> &internal_degree_seq, bool fixed_range, int nmin, int nmax, double tau2) {
+    log_msg(DEBUG, "IDEG _MEMBERSHIP");
 
 	if(num_nodes< overlapping_nodes) {
-
-		cerr<<"\n***********************\nERROR: there are more overlapping nodes than nodes in the whole network! Please, decrease the former ones or increase the latter ones"<<endl;
+        log_msg(ERROR, "There are more overlapping nodes than nodes in the whole network.");
 		return -1;
 	}
 
@@ -324,7 +320,7 @@ bool excess, bool defect,  deque<int> & degree_seq, deque<int> &num_seq, deque<i
 			max_degree_actual=int_interno;
 	}
 
-
+    log_msg(DEBUG, "Calling powerlaw to generate community distribution");
 	// it assigns the community size sequence
 	powerlaw(nmax, nmin, tau2, cumulative);
 	if (num_seq.empty()) {
@@ -348,7 +344,7 @@ bool excess, bool defect,  deque<int> & degree_seq, deque<int> &num_seq, deque<i
 		}
 		num_seq[min_element(num_seq.begin(), num_seq.end()) - num_seq.begin()]+=num_nodes + overlapping_nodes * (max_mem_num-1) - _num_;
 	}
-	//cout<<"num_seq"<<endl;
+	log_msg(DEBUG, "Setting internal degree");
 	// I have to assign the degree to the nodes
 	deque<int> member_numbers;
 	for(int i=0; i < overlapping_nodes; i++)
@@ -358,7 +354,7 @@ bool excess, bool defect,  deque<int> & degree_seq, deque<int> &num_seq, deque<i
 		member_numbers.push_back(1);
 
 	if(build_bipartite_network(member_matrix, member_numbers, num_seq)==-1) {
-		cerr<<"it seems that the overlapping nodes need more communities that those I provided. Please increase the number of communities or decrease the number of overlapping nodes"<<endl;
+		log_msg(ERROR, "it seems that the overlapping nodes need more communities that those I provided. Please increase the number of communities or decrease the number of overlapping nodes");
 		return -1;
 	}
 
@@ -379,8 +375,10 @@ bool excess, bool defect,  deque<int> & degree_seq, deque<int> &num_seq, deque<i
 	for (int i=0; i<num_nodes; i++)
 		map_nodes.push_back(0);
 
+    log_msg(DEBUG, "Setting Memberships");
 
-	for (uint i=degree_seq.size()-1; i>=0; i--) {
+	for (int i=degree_seq.size()-1; i>=0; i--) {
+
 		int try_this = irand(available_nodes.size()-1);
 
 		int kr=0;
@@ -391,15 +389,12 @@ bool excess, bool defect,  deque<int> & degree_seq, deque<int> &num_seq, deque<i
 			if(kr==3*num_nodes) {
 				if(change_community_size(num_seq)==-1) {
 
-					cerr<<"\n***********************\nERROR: this program needs more than one community to work fine"<<endl;
+					log_msg(ERROR, "This program needs more than one community to work fine");
+					cerr.flush();
 					return -1;
 
 				}
-				cout<<"it took too long to decide the memberships; I will try to change the community sizes"<<endl;
-				cout<<"new community sizes"<<endl;
-				for (uint i=0; i<num_seq.size(); i++)
-					cout<<num_seq[i]<<" ";
-				cout<<endl<<endl;
+				log_msg(DEBUG, "it took too long to decide the memberships; I will try to change the community sizes");
 
 				return ( internal_degree_and_membership(mixing_parameter, overlapping_nodes, max_mem_num,
 				    num_nodes, member_matrix, excess, defect, degree_seq, num_seq, internal_degree_seq,
@@ -413,6 +408,8 @@ bool excess, bool defect,  deque<int> & degree_seq, deque<int> &num_seq, deque<i
 		available_nodes.pop_back();
 	}
 
+    log_msg(DEBUG, "Memberships assigned");
+    
 
 	for (uint i=0; i<member_matrix.size(); i++) {
 		for (uint j=0; j<member_matrix[i].size(); j++) {
@@ -423,6 +420,10 @@ bool excess, bool defect,  deque<int> & degree_seq, deque<int> &num_seq, deque<i
 	for (uint i=0; i<member_matrix.size(); i++) {
 		sort(member_matrix[i].begin(), member_matrix[i].end());
     }
+
+    log_msg(DEBUG, "Return internal degree");
+    
+
 	return 0;
 
 }
@@ -446,7 +447,7 @@ int compute_internal_degree_per_node(int d, int m, deque<int> & a) {
 int build_subgraph(deque<set<int> > & E, const deque<int> & nodes, const deque<int> & degrees) {
 
 	if(degrees.size() < 3) {
-		cerr<<"it seems that some communities should have only 2 nodes! This does not make much sense (in my opinion) Please change some parameters!"<<endl;
+		log_msg(ERROR, "it seems that some communities should have only 2 nodes! This does not make much sense (in my opinion) Please change some parameters!");
 		return -1;
 	}
 
@@ -621,7 +622,7 @@ int build_subgraph(deque<set<int> > & E, const deque<int> & nodes, const deque<i
 			}
 
 			if(stopper_ml == 2 *  E.size()) {
-				cout<<"sorry, I need to change the degree distribution a little bit (one less link)"<<endl;
+				log_msg(DEBUG, "sorry, I need to change the degree distribution a little bit (one less link)");
 				break;
 			}
 		}
@@ -1003,14 +1004,15 @@ int erase_links(deque<set<int> > & E, const deque<deque<int> > & member_list, co
 
 			while ( (E[i].size()>1) &&  double(internal_kin(E, member_list, i))/E[i].size() < 1 - mixing_parameter) {
 			    //---------------------------------------------------------------------------------
-				cout<<"degree sequence changed to respect the option -sup ... "<<++eras_add_times<<endl;
+				log_msg(DEBUG, "degree sequence changed to respect the option -sup ... ");
+				++eras_add_times;
 				deque<int> deqar;
 				for (set<int>::iterator it_est=E[i].begin(); it_est!=E[i].end(); it_est++)
 					if (!they_are_mate(i, *it_est, member_list))
 						deqar.push_back(*it_est);
 
 				if(deqar.size()==E[i].size()) {	// this shouldn't happen...
-					cerr<<"sorry, something went wrong: there is a node which does not respect the constraints. (option -sup)"<<endl;
+					log_msg(ERROR, "sorry, something went wrong: there is a node which does not respect the constraints. (option -sup)");
 					return -1;
 				}
 				int random_mate=deqar[irand(deqar.size()-1)];
@@ -1028,7 +1030,7 @@ int erase_links(deque<set<int> > & E, const deque<deque<int> > & member_list, co
 				//---------------------------------------------------------------------------------
 
 
-				cout<<"degree sequence changed to respect the option -inf ... "<<++eras_add_times<<endl;
+				log_msg(DEBUG, "degree sequence changed to respect the option -inf ... ");
 
 
 				int stopper_here=num_nodes;
@@ -1042,7 +1044,7 @@ int erase_links(deque<set<int> > & E, const deque<deque<int> > & member_list, co
 				}
 
 				if(stopper_==stopper_here) {	// this shouldn't happen...
-					cerr<<"sorry, something went wrong: there is a node which does not respect the constraints. (option -inf)"<<endl;
+					log_msg(ERROR, "sorry, something went wrong: there is a node which does not respect the constraints. (option -inf)");
 					return -1;
 				}
 
@@ -1059,6 +1061,8 @@ int generate_benchmark(bool excess, bool defect, int num_nodes, double  average_
 	double  mixing_parameter, int  overlapping_nodes, int  overlap_membership, int  nmin, int  nmax, bool  fixed_range,
 	double ca, PyObject* edgeList, PyObject* communityList) {
 
+    log_msg(DEBUG, "Benchmark starting ");
+
 	double dmin=solve_dmin(max_degree, average_k, -tau);
 	if (dmin==-1)
 		return -1;
@@ -1074,10 +1078,11 @@ int generate_benchmark(bool excess, bool defect, int num_nodes, double  average_
 	if (!fixed_range) {
 		nmax=max_degree;
 		nmin=max(int(min_degree), 3);
-		// cout<<"-----------------------------------------------------------"<<endl;
-		// cout<<"community size range automatically set equal to ["<<nmin<<" , "<<nmax<<"]"<<endl;
+		log_msg(DEBUG, "community size range automatically set");
 	}
 
+    log_msg(DEBUG,  "Node degrees ");
+	
 	deque <int> degree_seq ;		//  degree sequence of the nodes
 	deque <double> cumulative;
 	powerlaw(max_degree, min_degree, tau, cumulative);
@@ -1099,30 +1104,37 @@ int generate_benchmark(bool excess, bool defect, int num_nodes, double  average_
 	deque<int> internal_degree_seq;
 
 	// ****** internal_degree and membership
+    log_msg(DEBUG,  "Node degrees internal");
+	
 
-	if(internal_degree_and_membership(mixing_parameter, overlapping_nodes, overlap_membership, num_nodes, member_matrix, excess, defect, degree_seq, num_seq, internal_degree_seq, fixed_range, nmin, nmax, tau2)==-1)
+	if(internal_degree_and_membership(mixing_parameter, overlapping_nodes,
+	    overlap_membership, num_nodes, member_matrix, excess, defect, degree_seq, num_seq, internal_degree_seq,
+	        fixed_range, nmin, nmax, tau2) == -1) {
 		return -1;
+    }
 
 	deque<set<int> > E;					// E is the adjacency matrix written in form of list of edges
 	deque<deque<int> > member_list;		// row i cointains the memberships of node i
 	deque<deque<int> > link_list;		// row i cointains degree of the node i respect to member_list[i][j]; there is one more number that is the external degree
 
-	// cout<<"building communities... "<<endl;
+	log_msg(DEBUG, "building communities... ");
+	
+
 	if(build_subgraphs(E, member_matrix, member_list, link_list, internal_degree_seq, degree_seq, excess, defect)==-1)
 		return -1;
 
-	// cout<<"connecting communities... "<<endl;
+	log_msg(DEBUG, "connecting communities... ");
 	connect_all_the_parts(E, member_list, link_list);
 
 	if(erase_links(E, member_list, excess, defect, mixing_parameter)==-1)
 		return -1;
 
 	if(ca!=unlikely) {
-		// cout<<"trying to approach an average clustering coefficient ... "<<ca<<endl;
+		log_msg(DEBUG, "trying to approach an average clustering coefficient ... ");
 		cclu(E, member_list, member_matrix, ca);
 	}
 
-	// cout<<"recording network..."<<endl;
+	log_msg(DEBUG, "recording network...");
     for (uint u=0; u < E.size(); u++) {
 
 		set<int>::iterator itb=E[u].begin();
@@ -1135,6 +1147,7 @@ int generate_benchmark(bool excess, bool defect, int num_nodes, double  average_
         }
 	}
 
+    log_msg(DEBUG, "Building return list ");
 	// building communities
 	// This differs from the C++ implementation slightly,
 	// The list returned is a tuple for community memberships (vertex_id, membership)
