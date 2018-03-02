@@ -1,4 +1,4 @@
-from setuptools import setup, Extension
+from setuptools import setup, Extension, find_packages
 
 sources = [
      "cigram/cmodel/generate_graph.cc",
@@ -46,7 +46,7 @@ setup(
     tests_require=['pytest'],
     url="https://github.com/azimov/cigram",
     include_package_data=True,
-    packages=["cigram", "cigram.network_opt"],
+    packages=find_packages(),
     download_url="https://github.com/azimov/cigram/archive/0.1.0.tar.gz",
     project_urls=dict(
         documentation='https://cigram.readthedocs.org',
