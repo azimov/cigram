@@ -36,9 +36,52 @@ static struct module_state _state;
 #endif
 
 
+void log_msg(int type, char const *msg)
+{
+    static PyObject *logging = NULL;
+    static PyObject *logger = NULL;
+    static PyObject *pystring = NULL;
+
+    // import logging module on demand
+    if (logging == NULL){
+        logging = PyImport_ImportModuleNoBlock("logging");
+        if (logging == NULL)
+            PyErr_SetString(PyExc_ImportError,
+                "Could not import module 'logging'");
+    }
+
+    pystring = Py_BuildValue("s", "cigram.generators");
+    logger = PyObject_CallMethod(logging, "getLogger", "O", pystring);
+    // build msg-string
+    pystring = Py_BuildValue("s", msg);
+
+    // call function depending on loglevel
+    switch (type)
+    {
+        case INFO:
+            PyObject_CallMethod(logger, "info", "O", pystring);
+            break;
+
+        case WARNING:
+            PyObject_CallMethod(logger, "warn", "O", pystring);
+            break;
+
+        case ERROR:
+            PyObject_CallMethod(logger, "error", "O", pystring);
+            break;
+
+        case DEBUG:
+            PyObject_CallMethod(logger, "debug", "O", pystring);
+            break;
+    }
+    Py_DECREF(pystring);
+}
+
+
 // wrapper for python
 static PyObject* generate_graph(PyObject* self, PyObject* args)
 {
+    log_msg(DEBUG, "Entering CiGRAM generation");
 	int N, K, formConnected, minDegree, minCommunitySize, seed;
 	double Density, sigmaF, sigmaR, communitySigmaF,  communitySigmaR, a, ek_per, overlapProb;
 
@@ -59,10 +102,12 @@ static PyObject* generate_graph(PyObject* self, PyObject* args)
 	std::vector<double> theta_communities;
 	std::vector<double> theta;
 
-	Graph G = generateGraph(N, K, Density, sigmaF, sigmaR, a, communitySigmaF, communitySigmaR, ek_per, overlapProb,
+    log_msg(DEBUG, "Calling generateGraph");
+    Graph G = generateGraph(N, K, Density, sigmaF, sigmaR, a, communitySigmaF, communitySigmaR, ek_per, overlapProb,
 	 theta, communities, theta_communities, formConnected, minDegree, minCommunitySize, seed);
 	PyObject *edgeList = PyList_New(0);
 
+    log_msg(DEBUG, "Building return values");
 	// build edge list to be returned
 	graph_traits<Graph>::edge_iterator ei, ei_end;
     for (tie(ei, ei_end) = edges(G); ei != ei_end; ++ei) {
@@ -102,6 +147,7 @@ static PyObject* generate_graph(PyObject* self, PyObject* args)
 
 	// Derefence our very large lists
 	PyObject *tup_return = Py_BuildValue("(OOOO)", edgeList, communityList, node_positions, community_positions);
+    log_msg(DEBUG, "Deref return values");
 	Py_DECREF(edgeList); 
 	Py_DECREF(communityList);
 	Py_DECREF(node_positions); 

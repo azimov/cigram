@@ -700,7 +700,7 @@ Graph generateGraph(uint N,
 	}
 
 	int E = int (round((Density * N * (N-1))/2));
-
+    log_msg(DEBUG, "Setting theta positions");
 	// Allows theta to be a fixed
 	if (theta.size() < N) {
 		// Assign node positions
@@ -708,11 +708,13 @@ Graph generateGraph(uint N,
 		setTheta(theta, sigmaF, generator);
 	}
 
+    log_msg(DEBUG, "Setting node ranks");
 	// normalised first selection probs
 	setBeta(theta, beta, sigmaR);
 
 	// No need to do all the other junk if we only generate a single community
 	if (K == 1) {
+	    log_msg(DEBUG, "Generate K=1 graph");
 		G = fillGraph(N, E, theta, beta, n_degree, sigmaR, a, generator, minDegree, formConnected);
 		return G;
 	}
@@ -732,8 +734,10 @@ Graph generateGraph(uint N,
 	if (minCommunitySize > int(N/K)){
 		minCommunitySize = int(N/K);
 	}
-	
-	assignCommunityNodes(K, nodes,  communities, nodeCommunities, overlapProb, beta_communities, theta_communities, a, generator, communitySigmaF, communitySigmaR, minCommunitySize);
+
+	log_msg(DEBUG, "Assign nodes to communities");
+	assignCommunityNodes(K, nodes,  communities, nodeCommunities, overlapProb, beta_communities, theta_communities, a,
+	                        generator, communitySigmaF, communitySigmaR, minCommunitySize);
 
 	std::vector<double> max_community (N);
 	for (size_t n=0; n < nodes.size(); ++n) {
@@ -747,6 +751,7 @@ Graph generateGraph(uint N,
 		max_community[n] = maxCom;
 	}
 
+    log_msg(DEBUG, "Overlap calculation");
 	// calculate maximal possible overlap  and number of available edges between communities
 	int maxBE = 0;
 	std::vector<int>::iterator it;
@@ -773,6 +778,7 @@ Graph generateGraph(uint N,
 
 	// We cannot place more edges between communities than maxBE
 	if (betweenEdges > maxBE) {
+	    log_msg(DEBUG, "Maximum edges between K set");
 		betweenEdges = maxBE;
 	}
 
@@ -800,7 +806,7 @@ Graph generateGraph(uint N,
 		}
 
 		setBeta(theta_k[k], beta_k[k], sigmaR);
-
+        log_msg(DEBUG, "Filling community subgraph");
 		Graph subGraph = fillGraph(communities[k].size(), communityEdgeCount[k], theta_k[k], beta_k[k], n_degree_k[k], sigmaR, a, generator, minDegree, formConnected);
 
 		graph_traits<Graph>::edge_iterator ei, ei_end;
@@ -826,12 +832,13 @@ Graph generateGraph(uint N,
 
 	if (reassignEdges){
 		// additional edges as a result of overlap
+		log_msg(INFO, "Forced to reassign edges between overlapping nodes");
 		overlapReassignement(G, K, reassignEdges, beta, theta, a, beta_communities, communities, communityEdgeCount, beta_k, n_degree_k, n_degree, generator);
 	}
 	
 	// selection for edges between communities
+	log_msg(INFO, "Assigning edges between communities");
 	setBeta(theta_communities, beta_communities, communitySigmaR);
-
 
 	std::vector<int> freqCounter (K);
 	for (size_t k=0; k < freqCounter.size(); ++k) {
@@ -845,7 +852,7 @@ Graph generateGraph(uint N,
 	int interCount = 0;
 
 	// until target edges achieved or possible edges are fill
-	while (int(num_edges(G)) < int(E) and interCount < maxBE and exit_early < 300) {
+	while (int(num_edges(G)) < int(E) and interCount < maxBE and exit_early < EXIT_EARLY_CONDITION) {
 		// select first community
 		boost::random::discrete_distribution<> first_k_dist(beta_communities);
 		int num = 0;
@@ -927,14 +934,16 @@ Graph generateGraph(uint N,
 			}
 
 		}
-
 		// early termination in case of bugs
 		++exit_early;
 	}
 
+    if(exit_early >= EXIT_EARLY_CONDITION) {
+        log_msg(WARNING, "Unable to assign edges between communities, terminated without completion");
+    }
+
 	std::vector<int> component(num_vertices(G));
 	int num_components = connected_components(G, &component[0]);
-
 
 	if (num_components > 1 && formConnected && uint(ek_per * E)  >= K - 1) {
 		rewire(G, theta, beta, component, num_components, generator, a, nodeCommunities);
@@ -944,7 +953,7 @@ Graph generateGraph(uint N,
 
 
 /*
- * Converts graph to an adjacency list, not used but useful for testing
+ * Converts graph to an adjacency list, not used but useful for testing if building outside of python
  */
 std::vector< std::pair <int, int> > createEdgeList(Graph &G)
 {

@@ -43,8 +43,11 @@ typedef boost::graph_traits<Graph>::vertex_descriptor VertexDesc;
 
 /*
  * Written in horrible procedural manner
- * TODO: rewrite in OOP
  */
+#define EXIT_EARLY_CONDITION 300
+
+enum logtypes {INFO, WARNING, ERROR, DEBUG};
+void log_msg(int type, char const *msg);
 
 Graph generateGraph(uint N,
 				uint K,
