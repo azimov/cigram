@@ -30,3 +30,30 @@ the connections between nodes.
 
 
 To generate networks with assortativity this can be specified with the parameter a (by default this is 0).
+
+LFR Benchmarks
+==============
+CiGRAM also includes the generation of Lancichinetti–Fortunato–Radicchi (LFR) benchamrks.
+This was implemented due to issues found with the python implementation in NetworkX.
+This version is mostly a tidied up version of the original C++ code.
+To use:
+
+.. code-block:: python
+
+    from cigram import lfr_benchmark_graph
+
+    params = {
+        'n': 10000,
+        'average_degree': 10,
+        'max_degree': 1000,
+        'mu': 0.5,
+        'tau': 2.0,
+        'tau2': 2.0,
+        'minc_size': 3,
+        'maxc_size': 1000,
+        'overlapping_nodes': 0,
+        'overlapping_memberships': 1,
+        'seed': 1337
+    }
+
+    graph, comms = lfr_benchmark_graph(**params)
