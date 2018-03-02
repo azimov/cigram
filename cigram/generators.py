@@ -119,7 +119,7 @@ def single_process_graph(n, avg_deg,
     params = (
         int(n),
         1,
-        int(density),
+        float(density),
         int(sigma_nodes),
         int(sigma_edges),
         int(a),

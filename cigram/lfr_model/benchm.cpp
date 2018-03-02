@@ -663,9 +663,10 @@ int build_subgraphs(deque<set<int> > & E, const deque<deque<int> > & member_matr
 		}
 		link_list.push_back(liin);
 	}
-	// now there is the check for the even node (it means that the internal degree of each group has to be even and we want to assure that, otherwise the degree_seq has to change) ----------------------------
-
-	// ------------------------ this is done to check if the sum of the internal degree is an even number. if not, the program will change it in such a way to assure that.
+	// now there is the check for the even node
+	// (it means that the internal degree of each group has to be even and we want to assure that, otherwise the degree_seq has to change)
+	// this is done to check if the sum of the internal degree is an even number.
+	// if not, the program will change it in such a way to assure that.
 
 	for (uint i=0; i < member_matrix.size(); i++) {
 
@@ -1059,7 +1060,7 @@ int erase_links(deque<set<int> > & E, const deque<deque<int> > & member_list, co
 
 int generate_benchmark(bool excess, bool defect, int num_nodes, double  average_k, int  max_degree, double  tau, double  tau2,
 	double  mixing_parameter, int  overlapping_nodes, int  overlap_membership, int  nmin, int  nmax, bool  fixed_range,
-	double ca, PyObject* edgeList, PyObject* communityList) {
+	double ca, deque<set<int> > &E, deque<deque<int> > &member_list) {
 
     log_msg(DEBUG, "Benchmark starting ");
 
@@ -1113,8 +1114,6 @@ int generate_benchmark(bool excess, bool defect, int num_nodes, double  average_
 		return -1;
     }
 
-	deque<set<int> > E;					// E is the adjacency matrix written in form of list of edges
-	deque<deque<int> > member_list;		// row i cointains the memberships of node i
 	deque<deque<int> > link_list;		// row i cointains degree of the node i respect to member_list[i][j]; there is one more number that is the external degree
 
 	log_msg(DEBUG, "building communities... ");
@@ -1134,30 +1133,5 @@ int generate_benchmark(bool excess, bool defect, int num_nodes, double  average_
 		cclu(E, member_list, member_matrix, ca);
 	}
 
-	log_msg(DEBUG, "recording network...");
-    for (uint u=0; u < E.size(); u++) {
-
-		set<int>::iterator itb=E[u].begin();
-
-		while (itb!=E[u].end()) {
-		    // Creates a python tuple, appends it to list, dereferences the tuple
-		    PyObject *tup = Py_BuildValue("(ii)", u+1, *(itb++)+1);
-		    PyList_Append(edgeList, tup);
-		    Py_DECREF(tup);
-        }
-	}
-
-    log_msg(DEBUG, "Building return list ");
-	// building communities
-	// This differs from the C++ implementation slightly,
-	// The list returned is a tuple for community memberships (vertex_id, membership)
-	// This is best handled at the python interface
-	for (uint i = 0; i < member_list.size(); i++){
-		for (uint j=0; j < member_list[i].size(); j++) {
-			PyObject *tup = Py_BuildValue("(ii)", i+1, member_list[i][j]+1);
-		    PyList_Append(communityList, tup);
-		    Py_DECREF(tup); // Always dereference python objects!
-	    }
-	}
 	return 0;
 }

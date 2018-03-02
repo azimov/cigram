@@ -36,4 +36,4 @@ int erase_links(deque<set<int> > & E, const deque<deque<int> > & member_list, co
 
 int generate_benchmark(bool excess, bool defect, int num_nodes, double  average_k, int  max_degree, double  tau, double  tau2,
 	double  mixing_parameter, int  overlapping_nodes, int  overlap_membership, int  nmin, int  nmax, bool  fixed_range,
-	double ca, PyObject* edgeList, PyObject* communityList);
+	double ca, deque<set<int> > &E, deque<deque<int> > &member_list);

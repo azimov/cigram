@@ -29,7 +29,6 @@ struct module_state {
 static struct module_state _state;
 #endif
 
-
 /***********************************************************/
 /* define logging function and logtypes for python.logging */
 /* modified from gist by H.Dickten 2014                    */
@@ -83,6 +82,10 @@ static PyObject* generate_graph(PyObject* self, PyObject* args)
 	int num_nodes, max_degree, overlapping_nodes, overlap_membership, nmin, nmax;
 	bool fixed_range, excess, defect;
 	long seed;
+    PyObject *edgeList = PyList_New(0);
+	PyObject *communityList = PyList_New(0);
+    deque<set<int> > edges;
+    deque<deque<int> > member_list;
 
 	// Convert python arguments into c
 	if (!PyArg_ParseTuple(args, "idddddiiiiilbbb", &num_nodes, &average_k, &tau, &tau2, &mixing_parameter, &clustering,
@@ -93,17 +96,40 @@ static PyObject* generate_graph(PyObject* self, PyObject* args)
     log_msg(DEBUG, "Setting random seed");
     srand5(seed);
 
-    PyObject *edgeList = PyList_New(0);
-	PyObject *communityList = PyList_New(0);
-
     log_msg(DEBUG, "Generating benchmark");
 
 	// build edge list to be returned,
     generate_benchmark(excess, defect, num_nodes, average_k, max_degree, tau, tau2,
 	                    mixing_parameter, overlapping_nodes, overlap_membership, nmin, nmax, fixed_range,
-	                    clustering, edgeList, communityList);
+	                    clustering, edges, member_list);
 
     log_msg(DEBUG, "Benchmark complete");
+
+    log_msg(DEBUG, "Building network py objects");
+    for (uint u=0; u < edges.size(); u++) {
+
+		set<int>::iterator itb=edges[u].begin();
+
+		while (itb!=edges[u].end()) {
+		    // Creates a python tuple, appends it to list, dereferences the tuple
+		    PyObject *tup = Py_BuildValue("(ii)", u+1, *(itb++)+1);
+		    PyList_Append(edgeList, tup);
+		    Py_DECREF(tup);
+        }
+	}
+
+    log_msg(DEBUG, "Building return list ");
+	// building communities
+	// This differs from the C++ implementation slightly,
+	// The list returned is a tuple for community memberships (vertex_id, membership)
+	// This is best handled at the python interface
+	for (uint i = 0; i < member_list.size(); i++){
+		for (uint j=0; j < member_list[i].size(); j++) {
+			PyObject *tup = Py_BuildValue("(ii)", i+1, member_list[i][j]+1);
+		    PyList_Append(communityList, tup);
+		    Py_DECREF(tup); // Always dereference python objects!
+	    }
+	}
 	// Derefence our very large lists
 	PyObject *tup_return = Py_BuildValue("(OO)", edgeList, communityList);
 	Py_DECREF(edgeList);

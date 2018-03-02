@@ -4,24 +4,8 @@ import pytest
 import networkx as nx
 
 
-def test_generation():
-    """Test that the cmodel functions"""
-    graph, positions, communities = cigram_graph(1000, 4.965, 3)
-
-    assert graph.number_of_nodes() == 1000
-    assert graph.number_of_edges() == 4965
-
-
-def test_large_graph():
-    """Test that larger graphs don't freeze. Should take a while to run"""
-    graph, positions, communities = cigram_graph(20000, 4.965, 3, sigma_edges=0.8, sigma_nodes=0.8)
-
-    assert graph.number_of_nodes() == 20000
-    assert graph.number_of_edges() == 99300
-
-
 def test_sp_generation():
-    """Test for graphs without community structure"""
+    """ Test for graphs without community structure, other tests cover more parameters"""
     graph, positions = single_process_graph(1000, 4.965)
     assert graph.number_of_nodes() == 1000
     assert graph.number_of_edges() == 4965
@@ -49,7 +33,7 @@ def test_param_bound(params, test_funcs):
         params['n'] = 2000
 
     if 'avg_deg' not in params:
-        params['avg_deg'] = 5
+        params['avg_deg'] = 10
 
     if 'k' not in params:
         params['k'] = 3
@@ -77,10 +61,21 @@ def test_param_bound(params, test_funcs):
         'overlapping_nodes': 0,
         'overlapping_memberships': 1,
         'seed': 1337
+    },
+    {
+        'n': 1000,
+        'average_degree': 10,
+        'max_degree': 100,
+        'mu': 0.5,
+        'tau': 2.0,
+        'tau2': 1.0,
+        'minc_size': 3,
+        'maxc_size': 1000,
+        'overlapping_nodes': 100,
+        'overlapping_memberships': 1,
+        'seed': 1337
     }
 ])
 def test_lfr(params):
-    graph, positions = single_process_graph(1000, 4.965)
-    print("ooo")
     graph, comms = lfr_benchmark_graph(**params)
-    assert graph.number_of_nodes() == 10000
+    assert graph.number_of_nodes() == params['n']
