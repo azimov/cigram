@@ -24,6 +24,10 @@ CiGRAM is a generator for random complex networks with community structure and a
 CiGRAM can be used as a benchmark for community detection algorithms.
 
 This package also includes LFR benchmark models.
+
+Installation - currently only tested on linux.
+Requires C++ and libboost installed and in library paths.
+There is no reason this shouldn't compile on windows if the required libs are present.
 '''
 
 with open('requirements.txt') as f:
