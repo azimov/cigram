@@ -32,7 +32,7 @@ with open('requirements.txt') as f:
 
 setup(
     name="cigram",
-    version="0.1.0",
+    version="0.1.1",
     description="Circular Gaussian Random gRAph Model - a generator for synthetic complex networks",
     long_description=long_description,
     zip_safe=False,
