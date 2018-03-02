@@ -87,7 +87,7 @@ int cclu(deque<set<int> > & en, const deque<deque<int> > & member_list, const de
 
 	double cc0=compute_cc(en);
 
-	std::string message =  "Average Clustering coefficient... " + std::to_string(cc0) + " trying to reach " + std::to_string(ca);
+	std::string message =  "Average Clustering coefficient...";
 	log_msg(INFO, message.c_str());
 
 	deque<double> ccs;
@@ -219,8 +219,7 @@ int cclu(deque<set<int> > & en, const deque<deque<int> > & member_list, const de
 		if(num_p>50)
 			num_p=50;
 
-        std::string message =  "Average Clustering coefficient... " + std::to_string(cc0) +
-         " trying to reach " + std::to_string(ca) + "\t\t expected " + std::to_string(num_p) + " more step(s) ";
+        std::string message =  "Average Clustering coefficient... ";
 		log_msg(DEBUG, message.c_str());
 
 	}

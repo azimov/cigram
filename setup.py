@@ -32,7 +32,7 @@ with open('requirements.txt') as f:
 
 setup(
     name="cigram",
-    version="0.1.1",
+    version="0.1.4",
     description="Circular Gaussian Random gRAph Model - a generator for synthetic complex networks",
     long_description=long_description,
     zip_safe=False,
@@ -42,12 +42,12 @@ setup(
     license="GPL",
     entry_points={
     },
+    ext_modules=[lfrmodule, cmodule],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
     url="https://github.com/azimov/cigram",
     include_package_data=True,
     packages=find_packages(),
-    download_url="https://github.com/azimov/cigram/archive/0.1.0.tar.gz",
     project_urls=dict(
         documentation='https://cigram.readthedocs.org',
         visualisation='http://cigram.ico2s.org',
