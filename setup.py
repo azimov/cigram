@@ -21,7 +21,7 @@ lfrmodule = Extension("cigram.lfr_model", sources=lfr_sources, extra_compile_arg
 
 setup(
     name="cigram",
-    version="1.0.0",
+    version="0.1.0",
     description="Circular Gaussian Random gRAph Model - a generator for synthetic complex networks",
     zip_safe=False,
     author="James Gilbert",
@@ -31,8 +31,8 @@ setup(
     },
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
-    url="http://cigram.ico2s.org",
+    url="https://github.com/azimov/cigram",
     include_package_data=True,
     packages=["cigram", "cigram.network_opt"],
-    ext_modules=[lfrmodule, cmodule],
+    download_url="https://github.com/azimov/cigram/archive/0.1.0.tar.gz",
 )
