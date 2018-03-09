@@ -25,10 +25,8 @@ import logging
 
 UNLIKELY = -214741
 
-FORMAT = '%(asctime)s %(message)s'
-logging.basicConfig(format=FORMAT, datefmt='%m/%d/%Y %I:%M:%S %p')
+# The same logging as the C++ code
 logger = logging.getLogger('cigram.generators')
-logger.setLevel(logging.DEBUG)
 
 
 def cigram_graph(n, avg_deg, k,
