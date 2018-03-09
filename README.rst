@@ -30,14 +30,18 @@ Future versions plan to include all the LFR benchmarks (weighted, directed and h
 Installation
 ------------
 
-Requires a C++ complier, libboost and python (versions 2.7+ and 3.5+ tested).
+Requires a C++ complier, libboost and python (versions 2.7, 3.5, 3.6 tested).
 
-Clone repository and use pip:
+Install libbosst from http://www.boost.org/
+
+Should work with libboost version 1.58 to 1.66. Note that the libboost version in ubuntu 16.04 repositories (1.55)
+does not work.
+
+Clone repository and use pip (virtualenv is suggested):
 
 .. code-block:: guess
 
-    pip install -r requirements.txt
-    pip install .
+    pip install cigram
 
 Alternatively, the package developed here can be installed by cloning the git repository and running the command:
 

@@ -27,6 +27,9 @@ This package also includes LFR benchmark models.
 
 Installation - currently only tested on linux.
 Requires C++ and libboost installed and in library paths.
+
+To install visit http://www.boost.org/
+
 There is no reason this shouldn't compile on windows if the required libs are present.
 '''
 
