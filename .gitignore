@@ -14,3 +14,13 @@ cigram.egg-info/
 cigram/__pycache__/
 dist/*
 tests/__pycache__/*
+
+env/*
+venv/*
+
+*.bak
+
+.pytest_cache/*
+.ipynb_checkpoints/*
+
+*/__pycache__/*
