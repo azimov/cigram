@@ -57,10 +57,10 @@ class CigramOptimiser(object):
 
         self.graph = g
         self.fixed_model_params = {
-                "n": g.number_of_nodes(),
-                "density": nx.density(g),
-                "connected": False,
-                "min_degree": min_degree
+            "n": g.number_of_nodes(),
+            "density": nx.density(g),
+            "connected": False,
+            "min_degree": min_degree
         }
         
         self.gbest = None
@@ -71,19 +71,19 @@ class CigramOptimiser(object):
         self.starting_population = starting_population
         
         if max_n is not None and max_n < g.number_of_nodes():
-                scaling_factor = g.number_of_nodes()/max_n
-                self.fixed_model_params["n"] = max_n
-                self.fixed_model_params["density"] *= scaling_factor
+            scaling_factor = g.number_of_nodes()/max_n
+            self.fixed_model_params["n"] = max_n
+            self.fixed_model_params["density"] *= scaling_factor
 
         if k_bounds is None:
-                k_bounds = (1, int(self.fixed_model_params["N"]/20))
+            k_bounds = (1, int(self.fixed_model_params["n"]/20))
         
         # Fix other parameters if we're not generating community strucuture
         if k_bounds == 1:
-                csf_bounds = 0
-                csr_bounds = 0
-                ek_per_bounds = 0
-                po_bounds = 0
+            csf_bounds = 0
+            csr_bounds = 0
+            ek_per_bounds = 0
+            po_bounds = 0
 
         # Set the boundaries of the optimisation that map to the parameters.
         self.param_boundaries = OrderedDict()
@@ -98,27 +98,29 @@ class CigramOptimiser(object):
         
         self.random_param_func = dict([(p, random.uniform) for p in self.param_boundaries.keys()])
         self.random_param_func["k"] = random.randint
-        
-        for p, bounds in self.param_boundaries.items():
-                if type(bounds) is not tuple:
-                        self.fixed_model_params[p] = bounds
-                        del self.param_boundaries[p]
-                elif bounds[0] == bounds[1]:
-                        self.fixed_model_params[p] = bounds[0]
-                        del self.param_boundaries[p]
+
+        param_boundaries_cpy = self.param_boundaries.copy()
+
+        for p, bounds in param_boundaries_cpy.items():
+            if type(bounds) is not tuple:
+                self.fixed_model_params[p] = bounds
+                del self.param_boundaries[p]
+            elif bounds[0] == bounds[1]:
+                self.fixed_model_params[p] = bounds[0]
+                del self.param_boundaries[p]
         
         if "name" in kwargs:
-                self.name = kwargs["name"]
+            self.name = kwargs["name"]
         else:
-                self.name = "{0}".format(g.name)
+            self.name = "{0}".format(g.name)
         
         self.fit_evaluator = fit_evaluator
         # Store the target degree distribution/assortativity/clustering
         # can be already specified if user wants to fit e.g. a degree distribution not obtained from a graph
         if graph_props is not None:
-                self.graph_props_a = graph_props
+            self.graph_props_a = graph_props
         else: 
-                self.graph_props_a = self.fit_evaluator.graph_properties(g)
+            self.graph_props_a = self.fit_evaluator.graph_properties(g)
                 
         self.seed = seed
     
@@ -129,7 +131,7 @@ class CigramOptimiser(object):
         :return: None
         """
         if self.gbest is None or self.gbest[1] > pbest[1]:
-                self.gbest = pbest
+            self.gbest = pbest
     
     def set_name(self, name):
         """
@@ -154,7 +156,7 @@ class CigramOptimiser(object):
         logger.debug("Generated {0}".format(params))
         return g
 
-    def parameter_generator(self):
+    def parameter_generator(self, random=None, args=None):
         """
         Generates a random set of parameters for use by the optimiser
         if the starting population kwarg is used at init, the population is not randomised but starts with specified

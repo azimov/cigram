@@ -2,6 +2,7 @@ from __future__ import division
 import networkx as nx
 import numpy as np
 from networkx.algorithms.approximation.clustering_coefficient import average_clustering
+import netlsd
 
 
 def ks_distance(g_degree, m_degree, d_min=1, normed=True):
@@ -41,6 +42,19 @@ def ks_distance(g_degree, m_degree, d_min=1, normed=True):
         return np.max(ds)
 
     return np.max(dists)
+
+
+class NetLSDFit(object):
+    """
+    Uses NetLSD spectral method for graph distance
+    """
+    @staticmethod
+    def graph_properties(g):
+        return netlsd.heat(g)
+
+    @staticmethod
+    def graph_fitness(heat_a, heat_b):
+        return netlsd.compare(heat_a, heat_b)
 
 
 class SummaryStatFitness(object):
