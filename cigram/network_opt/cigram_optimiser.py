@@ -56,9 +56,11 @@ class CigramOptimiser(object):
         """
 
         self.graph = g
+
+        avg_degree = sum(d for n, d in g.degree()) / float(g.number_of_nodes())
         self.fixed_model_params = {
             "n": g.number_of_nodes(),
-            "density": nx.density(g),
+            "avg_deg": avg_degree,
             "connected": False,
             "min_degree": min_degree
         }
@@ -145,11 +147,11 @@ class CigramOptimiser(object):
         Generate the model given a candidates parameter set.
         Must return a graph object
         """
-        params = dict(self.fixed_model_params.items() + self.convert_params(candidate).items())
+        params = self.get_params(candidate)
         
         if self.seed is not None:
-                params["seed"] = self.seed
-                self.seed += 1
+            params["seed"] = self.seed
+            self.seed += 1
 
         logger.debug("Generating {0}".format(params))
         g, _, _ = cigram_graph(**params)
@@ -175,7 +177,7 @@ class CigramOptimiser(object):
         A candidate set will be in a given order (specified by the parameter_generator method)
         This function just converts the params to those used by the model generator function.
         """
-        keys = self.param_boundaries.keys()
+        keys = list(self.param_boundaries.keys())
         return dict((keys[i], candidate[i]) for i in range(len(candidate)))
 
     def get_candidate(self, parameters):
@@ -185,8 +187,14 @@ class CigramOptimiser(object):
         return [parameters[p] for p in self.param_boundaries]
 
     def get_params(self, candidate):
-        
-        return dict(self.fixed_model_params.items() + self.convert_params(candidate).items())
+        rd = {}
+        for k, v in self.fixed_model_params.items():
+            rd[k] = v
+
+        for k, v in self.convert_params(candidate).items():
+            rd[k] = v
+
+        return rd
 
     def get_fitness(self, candidate):
         """
@@ -209,7 +217,7 @@ class CigramOptimiser(object):
         """
         
         if num_reps < 1:
-                num_reps = 1
+            num_reps = 1
         graphs = [self.generate(candidate) for _ in range(num_reps)]
         graph_props_b = self.fit_evaluator.graph_properties_avg(graphs)
         return self.fit_evaluator.graph_fitness(self.graph_props_a, graph_props_b)

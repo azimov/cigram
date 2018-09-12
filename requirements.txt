@@ -5,3 +5,4 @@ scipy>=0.19.1
 inspyred>=1.0.1
 click>=6.6
 cma>=1.1.7
+netlsd>=1.0.0

@@ -6,9 +6,9 @@ from cigram.network_opt.fitness_measures import NetLSDFit
 
 def test_fitter():
     """
-    General test
+    General test of code, should just run without error.
     :return:
     """
     graph = nx.karate_club_graph()
     mdl = CigramOptimiser(graph, NetLSDFit, k_bounds=2)
-    optimise_model(mdl)
+    results = optimise_model(mdl, max_evals=200)
