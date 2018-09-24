@@ -1,6 +1,8 @@
 CiGRAM - Circular Gaussian Random gRAph Model
 #############################################
 
+|Build Status| |Coverage Status| |PyPI| |docs|
+
 CiGRAM is a method for generating large complex networks with heterogeneous properties observed in real-world networks such as heavy tailed node degree distributions,  assortative connectivity and community structure.
 Currently the model only supports unweighted, undirected graphs.
 
@@ -15,7 +17,7 @@ Gilbert, J. P. "A probabilistic model for the evaluation of module extraction al
 
 Bibtex entry:
 
-.. code-block:: guess
+.. code-block::
 
     @phdthesis{gilbert2015probabilistic,
       title={A probabilistic model for the evaluation of module extraction algorithms in complex biological networks},
@@ -39,13 +41,13 @@ does not work.
 
 Clone repository and use pip (virtualenv is suggested):
 
-.. code-block:: guess
+.. code-block:: bash
 
     pip install cigram
 
 Alternatively, the package developed here can be installed by cloning the git repository and running the command:
 
-.. code-block:: guess
+.. code-block:: bash
 
     python setup.py install
 
@@ -62,3 +64,16 @@ To generate a random model with 1000 nodes, average degree of 5 split in to 5 co
     graph, vertex_positions, community_memberships = cigram.cigram_graph(1000, 5, 5)
 
 graph is a networkx model, vertex_positions is a dict of vertex positions by node id, and community memberships is a dict of vertex memberships of each cluster.
+
+
+.. |Build Status| image:: https://travis-ci.org/azimov/cigram.svg?branch=master
+   :target: https://travis-ci.org/azimov/cigram
+.. |Coverage Status| image:: https://codecov.io/github/azimov/cigram/coverage.svg?branch=master
+   :target: https://codecov.io/github/azimov/cigram
+.. |Build status2| image:: https://ci.appveyor.com/api/projects/status/
+   :target: https://ci.appveyor.com/project/azimov/cigram/branch/master
+.. |PyPI| image:: https://badge.fury.io/py/cigram.svg
+   :target: https://pypi.python.org/pypi/cigram
+.. |docs| image:: https://readthedocs.org/projects/cigram/badge/?style=flat
+    :target: https://readthedocs.org/projects/cigram
+    :alt: Documentation Status
