@@ -10,6 +10,6 @@ install:
   - pip install -r requirements.txt codecov
 # command to run tests
 script:
-  - py.test -n8 --cov=cigram
+  - py.test --cov=cigram
 after_success:
   - codecov
