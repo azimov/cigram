@@ -1,7 +1,7 @@
 CiGRAM - Circular Gaussian Random gRAph Model
 #############################################
 
-|Build Status| |Coverage Status| |PyPI| |docs|
+|Build Status| |PyPI| |supported-versions|
 
 CiGRAM is a method for generating large complex networks with heterogeneous properties observed in real-world networks such as heavy tailed node degree distributions,  assortative connectivity and community structure.
 Currently the model only supports unweighted, undirected graphs.
@@ -27,7 +27,9 @@ Bibtex entry:
     }
 
 This library also includes Lancichinetti–Fortunato–Radicchi (LFR) binary benchmark graphs.
-Future versions plan to include all the LFR benchmarks (weighted, directed and hierarchical networks).
+Future versions
+
+Please read the docs: https://cigram.readthedocs.io
 
 Installation
 ------------
@@ -77,3 +79,9 @@ graph is a networkx model, vertex_positions is a dict of vertex positions by nod
 .. |docs| image:: https://readthedocs.org/projects/cigram/badge/?style=flat
     :target: https://readthedocs.org/projects/cigram
     :alt: Documentation Status
+.. |wheel| image:: https://img.shields.io/pypi/wheel/cigram.svg
+    :alt: PyPI Wheel
+    :target: https://pypi.python.org/pypi/cigram
+.. |supported-versions| image:: https://img.shields.io/pypi/pyversions/cigram.svg
+    :alt: Supported versions
+    :target: https://pypi.python.org/pypi/cigram

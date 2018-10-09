@@ -39,7 +39,7 @@ with open('requirements.txt') as f:
 
 setup(
     name="cigram",
-    version="0.1.4",
+    version="0.1.5",
     description="Circular Gaussian Random gRAph Model - a generator for synthetic complex networks",
     long_description=long_description,
     zip_safe=False,
@@ -59,4 +59,19 @@ setup(
         documentation='https://cigram.readthedocs.org',
         visualisation='http://cigram.ico2s.org',
     ),
+    classifiers=[
+        'Environment :: Console',
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)',
+        'License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: Implementation :: CPython',
+        'Topic :: Scientific/Engineering',
+    ],
+    platforms="GNU/Linux, Mac OS X >= 10.7, Microsoft Windows >= 7",
 )
