@@ -6,3 +6,4 @@ inspyred>=1.0.1
 click>=6.6
 cma>=1.1.7
 netlsd>=1.0.0
+pytest-cov>=2.5.1
