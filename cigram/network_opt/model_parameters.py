@@ -219,7 +219,7 @@ def cma_es_optimise_model(model,
     """
 
     # Start optimiser with random starting parameters
-    es = cma.CMAEvolutionStrategy(model.parameter_generator(np.random, {}), cma_sigma,  dict(verb_disp=0, verbose=0))
+    es = cma.CMAEvolutionStrategy(model.parameter_generator(), cma_sigma,  dict(verb_disp=0, verbose=0))
     
     def fitness_wrap(x, res, tlock):
         fit = model.get_fitness(x)
