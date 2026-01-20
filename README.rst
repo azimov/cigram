@@ -34,12 +34,11 @@ Please read the docs: https://cigram.readthedocs.io
 Installation
 ------------
 
-Requires a C++ complier, libboost and python (versions 2.7, 3.5, 3.6 tested).
+Requires a C++ compiler, libboost (1.74+), and Python 3.10+.
 
-Install libbosst from http://www.boost.org/
+Install libboost from http://www.boost.org/
 
-Should work with libboost version 1.58 to 1.66. Note that the libboost version in ubuntu 16.04 repositories (1.55)
-does not work.
+Compatible with libboost 1.74 and newer. Ubuntu 22.04+ and macOS Homebrew provide compatible versions.
 
 Clone repository and use pip (virtualenv is suggested):
 

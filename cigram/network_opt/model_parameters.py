@@ -1,4 +1,3 @@
-from __future__ import division
 import json
 import numpy as np
 import random
@@ -42,7 +41,10 @@ def graph_fit_evaluator(candidates, args):
     Compare the distance between target and real network
     This is a generic function that runs the get_fittness method found in the network model class.
     """
-    model = model_store[args["name"]]	
+    # First try args (for multiprocessing), then fall back to model_store
+    model = args.get("model") or model_store.get(args["name"])
+    if model is None:
+        raise KeyError(f"Model '{args['name']}' not found. This may be a multiprocessing issue.")
     fit = []
     for candidate in candidates:
             dist = []
@@ -59,7 +61,10 @@ def graph_fit_evaluator_avg(candidates, args):
     Compare the distance between target and real network with distance that uses averages over num replicates
     This is a generic function that runs the get_fittness method found in the network model class.
     """
-    model = model_store[args["name"]]	
+    # First try args (for multiprocessing), then fall back to model_store
+    model = args.get("model") or model_store.get(args["name"])
+    if model is None:
+        raise KeyError(f"Model '{args['name']}' not found. This may be a multiprocessing issue.")
     fit = []
     for candidate in candidates:
             fit.append(model.get_fitness_avg(candidate, args["candidate_replicates"]))
@@ -73,7 +78,8 @@ def time_logger_observer(population, num_generations, num_evaluations, args):
     """
     e_time = time.time() - args["start_time"]
     save_path = args["observer_save_path"]
-    model = model_store[args["name"]]
+    # First try args (for multiprocessing), then fall back to model_store
+    model = args.get("model") or model_store.get(args["name"])
     if "best_fit_history" not in args:
             args["best_fit_history"] = []
 
@@ -111,7 +117,8 @@ def default_observer(population, num_generations, num_evaluations, args):
     Save each generation of the optimi
     """
     save_path = args["observer_save_path"]
-    model = model_store[args["name"]]
+    # First try args (for multiprocessing), then fall back to model_store
+    model = args.get("model") or model_store.get(args["name"])
 
     # get the population
     results = sorted([(model.get_params(c.candidate), c.fitness) for c in population], key=lambda x: x[1])
@@ -184,6 +191,7 @@ def optimise_model(model,
         bounder=model.bounder(),
         generator=model.parameter_generator,
         name=model.name,
+        model=model,  # Pass model directly for multiprocessing compatibility
         observer_save_path=".cigram_cache/{0}.json".format(model.name),
         start_time=start_time
     )

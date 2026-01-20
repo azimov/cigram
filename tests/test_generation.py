@@ -1,4 +1,3 @@
-from __future__ import division, print_function
 from cigram import cigram_graph, single_process_graph, lfr_benchmark_graph
 import pytest
 import networkx as nx

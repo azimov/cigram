@@ -1,4 +1,3 @@
-from __future__ import division
 import networkx as nx
 import numpy as np
 from networkx.algorithms.approximation.clustering_coefficient import average_clustering
@@ -83,7 +82,7 @@ class SummaryStatFitness(object):
         
         max degree, ks_dist, degree_assortativity, clustering coefficient
         """
-        degree = g.degree().values()
+        degree = [d for n, d in g.degree()]
         props = dict(
                 max_degree=max(degree),
                 degree=degree,
@@ -126,7 +125,7 @@ class NoClusterSummaryFitness(object):
         
         max degree, ks_dist, degree_assortativity,
         """
-        degree = g.degree().values()
+        degree = [d for n, d in g.degree()]
         props = dict(
             degree=degree,
             max_degree=max(degree),

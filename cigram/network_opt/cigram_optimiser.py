@@ -1,7 +1,6 @@
 """
 Module contains classes for finding best fit GRAM parameters in the parameter selection tool.
 """
-from __future__ import division
 import networkx as nx
 from cigram import cigram_graph
 import numpy as np

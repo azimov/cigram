@@ -1,10 +1,41 @@
-from setuptools import setup, Extension, find_packages
+import os
+import subprocess
+from setuptools import setup, Extension
+
+
+def get_boost_include_dirs():
+    """Get Boost include directories for different platforms."""
+    include_dirs = []
+    
+    # Check for Homebrew on macOS
+    try:
+        result = subprocess.run(
+            ["brew", "--prefix", "boost"],
+            capture_output=True,
+            text=True
+        )
+        if result.returncode == 0:
+            boost_prefix = result.stdout.strip()
+            include_dirs.append(os.path.join(boost_prefix, "include"))
+    except FileNotFoundError:
+        pass
+    
+    # Common Linux paths
+    if os.path.exists("/usr/include/boost"):
+        include_dirs.append("/usr/include")
+    if os.path.exists("/usr/local/include/boost"):
+        include_dirs.append("/usr/local/include")
+    
+    return include_dirs
+
+
+boost_include_dirs = get_boost_include_dirs()
 
 sources = [
-     "cigram/cmodel/generate_graph.cc",
-     "cigram/cmodel/distributions.cc",
-     "cigram/cmodel/sample.cc",
-     "cigram/cmodel/cmodel.cc",
+    "cigram/cmodel/generate_graph.cc",
+    "cigram/cmodel/distributions.cc",
+    "cigram/cmodel/sample.cc",
+    "cigram/cmodel/cmodel.cc",
 ]
 
 lfr_sources = [
@@ -16,62 +47,18 @@ lfr_sources = [
     "cigram/lfr_model/lfr_model.cc",
 ]
 
-cmodule = Extension("cigram.cmodel", sources=sources, extra_compile_args=["-Ofast"])
-lfrmodule = Extension("cigram.lfr_model", sources=lfr_sources, extra_compile_args=["-Wno-undef", "-Ofast"])
-
-long_description='''
-CiGRAM is a generator for random complex networks with community structure and assortative connections.
-CiGRAM can be used as a benchmark for community detection algorithms.
-
-This package also includes LFR benchmark models.
-
-Installation - currently only tested on linux.
-Requires C++ and libboost installed and in library paths.
-
-To install visit http://www.boost.org/
-
-There is no reason this shouldn't compile on windows if the required libs are present.
-'''
-
-with open('requirements.txt') as f:
-    requirements = f.read().splitlines()
-
-
-setup(
-    name="cigram",
-    version="0.1.5",
-    description="Circular Gaussian Random gRAph Model - a generator for synthetic complex networks",
-    long_description=long_description,
-    zip_safe=False,
-    author="James Gilbert",
-    install_requires=requirements,
-    author_email="jamie.gilbert@azimov.co.uk",
-    license="GPL",
-    entry_points={
-    },
-    ext_modules=[lfrmodule, cmodule],
-    setup_requires=['pytest-runner'],
-    tests_require=['pytest'],
-    url="https://github.com/azimov/cigram",
-    include_package_data=True,
-    packages=find_packages(),
-    project_urls=dict(
-        documentation='https://cigram.readthedocs.org',
-        visualisation='http://cigram.ico2s.org',
-    ),
-    classifiers=[
-        'Environment :: Console',
-        'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)',
-        'License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: Implementation :: CPython',
-        'Topic :: Scientific/Engineering',
-    ],
-    platforms="GNU/Linux, Mac OS X >= 10.7, Microsoft Windows >= 7",
+cmodule = Extension(
+    "cigram.cmodel",
+    sources=sources,
+    include_dirs=boost_include_dirs,
+    extra_compile_args=["-O3", "-std=c++17"],
 )
+
+lfrmodule = Extension(
+    "cigram.lfr_model",
+    sources=lfr_sources,
+    include_dirs=boost_include_dirs,
+    extra_compile_args=["-Wno-undef", "-O3", "-std=c++17"],
+)
+
+setup(ext_modules=[lfrmodule, cmodule])
